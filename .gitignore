@@ -7,10 +7,6 @@ build/
 logs/
 *.log
 
-# Optional: Ignore IDE specific files
-.vscode/
-.idea/
-
 # Optional: Ignore OS generated files
 .DS_Store
 Thumbs.db
@@ -23,8 +19,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-
-# Optional: Ignore lock files if you don't want to commit them
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
+#Example files
+launch.json
