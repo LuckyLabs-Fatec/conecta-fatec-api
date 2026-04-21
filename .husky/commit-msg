@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+commit_msg_file=${1:-"$(git rev-parse --git-path COMMIT_EDITMSG)"}
+
+pnpm dlx commitlint --edit "$commit_msg_file"
