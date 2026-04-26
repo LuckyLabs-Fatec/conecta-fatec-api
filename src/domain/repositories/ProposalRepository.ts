@@ -8,7 +8,20 @@ export type CreateProposalParams = {
   attachments: Buffer;
 };
 
+export type ListProposalsParams = {
+  page: number;
+  limit: number;
+};
+
+export type PaginatedProposals = {
+  items: Proposal[];
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+};
+
 export interface ProposalRepository {
   create(data: CreateProposalParams): Promise<Proposal>;
-  findAll(): Promise<Proposal[]>;
+  findPaginated(params: ListProposalsParams): Promise<PaginatedProposals>;
 }

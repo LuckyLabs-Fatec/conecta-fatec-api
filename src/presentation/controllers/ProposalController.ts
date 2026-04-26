@@ -24,8 +24,27 @@ export type CreateProposalContract = {
   execute(data: CreateProposalRequest): Promise<ProposalResponse>;
 };
 
+export type ListProposalsQuery = {
+  page?: unknown;
+  limit?: unknown;
+};
+
+export type PaginatedProposalResponse = {
+  items: ReturnType<ProposalController["serializeProposal"]>[];
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+};
+
 export type ListProposalsContract = {
-  execute(): Promise<ProposalResponse[]>;
+  execute(params: { page: number; limit: number }): Promise<{
+    items: ProposalResponse[];
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  }>;
 };
 
 export class ProposalController {
@@ -64,11 +83,18 @@ export class ProposalController {
     }
   }
 
-  async list(_req: Request, res: Response): Promise<void> {
+  async list(req: Request, res: Response): Promise<void> {
     try {
-      const proposals = await this.listProposals.execute();
+      const { page, limit } = this.parsePaginationQuery(req.query);
+      const proposals = await this.listProposals.execute({ page, limit });
 
-      res.status(200).json(proposals.map((proposal) => this.serializeProposal(proposal)));
+      res.status(200).json({
+        items: proposals.items.map((proposal) => this.serializeProposal(proposal)),
+        page: proposals.page,
+        limit: proposals.limit,
+        totalItems: proposals.totalItems,
+        totalPages: proposals.totalPages,
+      });
     } catch (error: unknown) {
       const statusCode = HttpErrorMapper.getStatusCode(error);
       const message = HttpErrorMapper.getMessage(error);
@@ -100,6 +126,31 @@ export class ProposalController {
     }
 
     throw new InvalidProposalPayloadError("Attachments must be a Buffer or base64 string");
+  }
+
+  private parsePaginationQuery(query: ListProposalsQuery): { page: number; limit: number } {
+    const page = this.parsePositiveInteger(query.page, 1);
+    const limit = this.parsePositiveInteger(query.limit, 10);
+
+    if (limit > 100) {
+      throw new InvalidProposalPayloadError("Limit must be less than or equal to 100");
+    }
+
+    return { page, limit };
+  }
+
+  private parsePositiveInteger(value: unknown, fallback: number): number {
+    if (value === undefined || value === null || value === "") {
+      return fallback;
+    }
+
+    const parsedValue = Number(value);
+
+    if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
+      throw new InvalidProposalPayloadError("Pagination parameters must be positive integers");
+    }
+
+    return parsedValue;
   }
 
   private serializeProposal(proposal: ProposalResponse) {

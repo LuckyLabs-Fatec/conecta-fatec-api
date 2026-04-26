@@ -10,28 +10,34 @@ export function makeProposalController(): ProposalController {
 
   return new ProposalController(
     {
-    async execute(data: CreateProposalRequest) {
-      const createdProposal = await proposalRepository.create({
-        title: data.title,
-        description: data.description,
-        submissionDate: data.submissionDate,
-        status: data.status,
-        attachments: data.attachments,
-      });
+      async execute(data: CreateProposalRequest) {
+        const createdProposal = await proposalRepository.create({
+          title: data.title,
+          description: data.description,
+          submissionDate: data.submissionDate,
+          status: data.status,
+          attachments: data.attachments,
+        });
 
-      return {
-        id: createdProposal.id,
-        title: createdProposal.title,
-        description: createdProposal.description,
-        submissionDate: createdProposal.submissionDate,
-        status: createdProposal.status,
-        attachments: createdProposal.attachments,
-      };
-    },
+        return {
+          id: createdProposal.id,
+          title: createdProposal.title,
+          description: createdProposal.description,
+          submissionDate: createdProposal.submissionDate,
+          status: createdProposal.status,
+          attachments: createdProposal.attachments,
+        };
+      },
     },
     {
-      async execute(): Promise<ProposalResponse[]> {
-        return proposalRepository.findAll();
+      async execute({ page, limit }): Promise<{
+        items: ProposalResponse[];
+        page: number;
+        limit: number;
+        totalItems: number;
+        totalPages: number;
+      }> {
+        return proposalRepository.findPaginated({ page, limit });
       },
     },
   );

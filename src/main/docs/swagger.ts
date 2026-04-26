@@ -180,6 +180,31 @@ const swaggerDocument = {
         },
         required: ["id", "title", "description", "submissionDate", "status", "attachments"],
       },
+      ProposalListMeta: {
+        type: "object",
+        properties: {
+          page: { type: "integer", example: 1 },
+          limit: { type: "integer", example: 10 },
+          totalItems: { type: "integer", example: 42 },
+          totalPages: { type: "integer", example: 5 },
+        },
+        required: ["page", "limit", "totalItems", "totalPages"],
+      },
+      ProposalListResponse: {
+        type: "object",
+        properties: {
+          items: {
+            type: "array",
+            items: {
+              $ref: "#/components/schemas/ProposalListItem",
+            },
+          },
+          meta: {
+            $ref: "#/components/schemas/ProposalListMeta",
+          },
+        },
+        required: ["items", "meta"],
+      },
       RootResponse: {
         type: "object",
         properties: {
@@ -293,16 +318,46 @@ const swaggerDocument = {
       get: {
         tags: ["Proposals"],
         summary: "Lista todas as propostas",
+        parameters: [
+          {
+            name: "page",
+            in: "query",
+            required: false,
+            schema: {
+              type: "integer",
+              minimum: 1,
+              example: 1,
+            },
+          },
+          {
+            name: "limit",
+            in: "query",
+            required: false,
+            schema: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              example: 10,
+            },
+          },
+        ],
         responses: {
           200: {
             description: "Lista de propostas",
             content: {
               "application/json": {
                 schema: {
-                  type: "array",
-                  items: {
-                    $ref: "#/components/schemas/ProposalListItem",
-                  },
+                  $ref: "#/components/schemas/ProposalListResponse",
+                },
+              },
+            },
+          },
+          400: {
+            description: "Parâmetros de paginação inválidos",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ErrorResponse",
                 },
               },
             },
