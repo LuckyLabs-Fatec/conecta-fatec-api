@@ -33,7 +33,10 @@ export function makeAuthController(): AuthController {
         (process.env.JWT_EXPIRES_IN ?? "15m") as Parameters<typeof sign>[2]["expiresIn"];
 
       const accessToken = sign(
-        { email: user.email },
+        {
+          email: user.email,
+          role: user.role,
+        },
         jwtSecret,
         {
           subject: user.id,
