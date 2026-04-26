@@ -83,4 +83,82 @@ describe("AuthController", () => {
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({ accessToken: fakeToken });
     });
+
+    it("should return 501 when register is not implemented", async () => {
+        const req = {
+            body: {
+                email: faker.internet.email(),
+                password: faker.internet.password(),
+            }
+        } as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await authController.register(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(501);
+        expect(res.json).toHaveBeenCalledWith({ message: "Not implemented" });
+    });
+
+    it("should return 201 and created user on successful register", async () => {
+        const createdUser = {
+            id: faker.string.uuid(),
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+        };
+
+        const createUserMock = {
+            execute: vi.fn().mockResolvedValue(createdUser),
+        };
+
+        const controller = new AuthController(authenticateUserMock, createUserMock);
+
+        const req = {
+            body: {
+                email: faker.internet.email(),
+                password: faker.internet.password(),
+                name: faker.person.fullName(),
+            }
+        } as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.register(req, res);
+
+        expect(createUserMock.execute).toHaveBeenCalledWith(req.body);
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith(createdUser);
+    });
+
+    it("should return mapped error when register fails", async () => {
+        const createUserMock = {
+            execute: vi.fn().mockRejectedValue(new Error()),
+        };
+
+        const controller = new AuthController(authenticateUserMock, createUserMock);
+
+        const req = {
+            body: {
+                email: faker.internet.email(),
+                password: faker.internet.password(),
+                name: faker.person.fullName(),
+            }
+        } as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.register(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });
+    });
 });

@@ -15,12 +15,17 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov", "html"],
+      exclude: [
+        "src/main/**",
+        "src/infra/database/**",
+        "src/test/**",
+      ],
       thresholds: {
         global: {
-          statements: 95,
-          branches: 95,
-          functions: 95,
-          lines: 95,
+          statements: 100,
+          branches: 100,
+          functions: 100,
+          lines: 100,
         },
       }
     }

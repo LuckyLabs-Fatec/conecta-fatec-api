@@ -118,4 +118,67 @@ describe("PrismaUserRepository", () => {
       role: "SOCIETY",
     });
   });
+
+  it("should create user with default role and no name", async () => {
+    const create = vi.fn().mockResolvedValue({
+      id: "created-user-id",
+      email: "no-name@example.com",
+      passwordHash: "hashed-password",
+      name: null,
+      role: "SOCIETY",
+    });
+
+    const sut = new PrismaUserRepository(
+      {
+        user: { create, findUnique: vi.fn() },
+      } as unknown as PrismaClient
+    );
+
+    const user = await sut.create({
+      email: "no-name@example.com",
+      passwordHash: "hashed-password",
+    });
+
+    expect(create).toHaveBeenCalledWith({
+      data: {
+        email: "no-name@example.com",
+        passwordHash: "hashed-password",
+        name: undefined,
+        role: "SOCIETY",
+      },
+    });
+    expect(user).toEqual({
+      id: "created-user-id",
+      email: "no-name@example.com",
+      passwordHash: "hashed-password",
+      name: undefined,
+      role: "SOCIETY",
+    });
+  });
+
+  it("should return mapped user without name when email exists", async () => {
+    const findUnique = vi.fn().mockResolvedValue({
+      id: "user-id",
+      email: "noname@example.com",
+      passwordHash: "hashed-password",
+      name: null,
+      role: "SOCIETY",
+    });
+
+    const sut = new PrismaUserRepository(
+      {
+        user: { findUnique, create: vi.fn() },
+      } as unknown as PrismaClient
+    );
+
+    const user = await sut.findByEmail("noname@example.com");
+
+    expect(user).toEqual({
+      id: "user-id",
+      email: "noname@example.com",
+      passwordHash: "hashed-password",
+      name: undefined,
+      role: "SOCIETY",
+    });
+  });
 });

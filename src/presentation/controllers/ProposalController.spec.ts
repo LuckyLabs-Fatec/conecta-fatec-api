@@ -37,6 +37,21 @@ describe("ProposalController", () => {
     expect(createProposalMock.execute).not.toHaveBeenCalled();
   });
 
+  it("should return 400 when body is missing", async () => {
+    const req = {} as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.create(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Missing required fields" });
+    expect(createProposalMock.execute).not.toHaveBeenCalled();
+  });
+
   it("should return 400 when submission date is invalid", async () => {
     const req = {
       body: {
@@ -154,5 +169,71 @@ describe("ProposalController", () => {
         attachments: attachments.toString("base64"),
       }),
     );
+  });
+
+  it("should accept buffer attachments on success", async () => {
+    const now = new Date("2026-04-26T10:00:00.000Z");
+    const attachments = Buffer.from("buffer-content");
+
+    vi.mocked(createProposalMock.execute).mockResolvedValue({
+      id: faker.string.uuid(),
+      title: faker.lorem.words(3),
+      description: faker.lorem.paragraph(),
+      submissionDate: now,
+      status: "SUBMITTED",
+      attachments,
+    });
+
+    const req = {
+      body: {
+        title: faker.lorem.words(3),
+        description: faker.lorem.paragraph(),
+        submissionDate: now.toISOString(),
+        status: "SUBMITTED",
+        attachments,
+      },
+    } as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.create(req, res);
+
+    expect(createProposalMock.execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attachments,
+      }),
+    );
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attachments: attachments.toString("base64"),
+      }),
+    );
+  });
+
+  it("should return 400 when attachments are invalid", async () => {
+    const req = {
+      body: {
+        title: faker.lorem.words(3),
+        description: faker.lorem.paragraph(),
+        submissionDate: new Date().toISOString(),
+        status: "SUBMITTED",
+        attachments: 123,
+      },
+    } as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.create(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Attachments must be a Buffer or base64 string" });
+    expect(createProposalMock.execute).not.toHaveBeenCalled();
   });
 });
