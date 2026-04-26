@@ -7,6 +7,7 @@ const swaggerDocument = {
   },
   tags: [
     { name: "Auth", description: "Autenticação e cadastro de usuários" },
+    { name: "Proposals", description: "Gerenciamento de propostas" },
   ],
   components: {
     schemas: {
@@ -84,6 +85,67 @@ const swaggerDocument = {
           },
         },
         required: ["id", "email"],
+      },
+      CreateProposalRequest: {
+        type: "object",
+        properties: {
+          title: {
+            type: "string",
+            example: "Mobilidade Inteligente no Campus",
+          },
+          description: {
+            type: "string",
+            example: "Uma proposta para otimizar o transporte interno e a acessibilidade no campus.",
+          },
+          submissionDate: {
+            type: "string",
+            format: "date-time",
+            example: "2026-04-26T10:00:00.000Z",
+          },
+          status: {
+            type: "string",
+            example: "SUBMITTED",
+          },
+          attachments: {
+            type: "string",
+            format: "byte",
+            example: "cGxhbm8tZGUtbW9iaWxpZGFkZS12MQ==",
+          },
+        },
+        required: ["title", "description", "submissionDate", "status", "attachments"],
+      },
+      CreateProposalResponse: {
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            format: "uuid",
+            example: "1f4d3c20-7f52-4c1f-b9ef-93cd5b8db001",
+          },
+          title: {
+            type: "string",
+            example: "Mobilidade Inteligente no Campus",
+          },
+          description: {
+            type: "string",
+            example: "Uma proposta para otimizar o transporte interno e a acessibilidade no campus.",
+          },
+          submissionDate: {
+            type: "string",
+            format: "date-time",
+            example: "2026-04-26T10:00:00.000Z",
+          },
+          status: {
+            type: "string",
+            example: "SUBMITTED",
+          },
+          attachments: {
+            type: "string",
+            format: "byte",
+            example: "cGxhbm8tZGUtbW9iaWxpZGFkZS12MQ==",
+          },
+        },
+        required: ["id", "title", "description", "submissionDate", "status", "attachments"],
       },
       RootResponse: {
         type: "object",
@@ -173,6 +235,54 @@ const swaggerDocument = {
           },
           409: {
             description: "Usuário já existe",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ErrorResponse",
+                },
+              },
+            },
+          },
+          500: {
+            description: "Erro interno",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ErrorResponse",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/proposals": {
+      post: {
+        tags: ["Proposals"],
+        summary: "Cria uma nova proposta",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/CreateProposalRequest",
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: "Proposta criada com sucesso",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/CreateProposalResponse",
+                },
+              },
+            },
+          },
+          400: {
+            description: "Payload inválido",
             content: {
               "application/json": {
                 schema: {
