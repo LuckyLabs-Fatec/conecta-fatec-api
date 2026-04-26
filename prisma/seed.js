@@ -9,6 +9,7 @@ const users = [
     email: "society@example.com",
     password: "society123",
     name: "Representante da Sociedade",
+    avatar: "https://cdn.conecta-fatec.com/avatars/society.png",
     role: "SOCIETY",
   },
   {
@@ -16,6 +17,7 @@ const users = [
     email: "mediator@example.com",
     password: "mediator123",
     name: "Pessoa Mediadora",
+    avatar: "https://cdn.conecta-fatec.com/avatars/mediator.png",
     role: "MEDIATOR",
   },
   {
@@ -23,6 +25,7 @@ const users = [
     email: "student@example.com",
     password: "student123",
     name: "Estudante Exemplo",
+    avatar: null,
     role: "STUDENT",
   },
 ];
@@ -94,6 +97,7 @@ async function main() {
       where: { email: user.email },
       update: {
         name: user.name,
+        avatar: user.avatar,
         passwordHash,
         role: user.role,
       },
@@ -101,6 +105,7 @@ async function main() {
         id: user.id,
         email: user.email,
         name: user.name,
+        avatar: user.avatar,
         passwordHash,
         role: user.role,
       },

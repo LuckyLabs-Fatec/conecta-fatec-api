@@ -10,12 +10,14 @@ export type CreateUserResponse = {
   id: string;
   email: string;
   name?: string;
+  avatar?: string;
 };
 
 export type CreateUserRequest = {
   email: string;
   password: string;
   name?: string;
+  avatar?: string;
 };
 
 export type AuthenticateUserContract = {
@@ -51,10 +53,10 @@ export class AuthController {
       return;
     }
 
-    const { email, password, name } = req.body;
+    const { email, password, name, avatar } = req.body;
 
     try {
-      const result = await this.createUser.execute({ email, password, name });
+      const result = await this.createUser.execute({ email, password, name, avatar });
       res.status(201).json(result);
     } catch (error: unknown) {
       const statusCode = HttpErrorMapper.getStatusCode(error);

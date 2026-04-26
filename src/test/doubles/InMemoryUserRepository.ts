@@ -14,6 +14,7 @@ export class InMemoryUserRepository implements UserRepository {
       email: data.email,
       passwordHash: data.passwordHash,
       name: data.name,
+      avatar: data.avatar,
       role: data.role ?? UserRole.SOCIETY,
     };
 

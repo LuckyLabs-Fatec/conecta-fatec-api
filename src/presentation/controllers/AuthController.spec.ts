@@ -108,6 +108,7 @@ describe("AuthController", () => {
             id: faker.string.uuid(),
             email: faker.internet.email(),
             name: faker.person.fullName(),
+            avatar: faker.image.avatar(),
         };
 
         const createUserMock = {
@@ -121,6 +122,7 @@ describe("AuthController", () => {
                 email: faker.internet.email(),
                 password: faker.internet.password(),
                 name: faker.person.fullName(),
+                avatar: faker.image.avatar(),
             }
         } as Request;
 
@@ -148,6 +150,7 @@ describe("AuthController", () => {
                 email: faker.internet.email(),
                 password: faker.internet.password(),
                 name: faker.person.fullName(),
+                avatar: faker.image.avatar(),
             }
         } as Request;
 

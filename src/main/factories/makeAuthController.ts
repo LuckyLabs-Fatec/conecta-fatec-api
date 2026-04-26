@@ -61,12 +61,14 @@ export function makeAuthController(): AuthController {
         email: data.email,
         passwordHash,
         name: data.name,
+        avatar: data.avatar,
       });
 
       return {
         id: createdUser.id,
         email: createdUser.email,
         name: createdUser.name,
+        avatar: createdUser.avatar,
       };
     },
   });

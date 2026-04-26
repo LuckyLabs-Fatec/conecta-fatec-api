@@ -13,6 +13,7 @@ export class PrismaUserRepository implements UserRepository {
         email: data.email,
         passwordHash: data.passwordHash,
         name: data.name,
+        avatar: data.avatar,
         role: (data.role as PrismaUserRole | undefined) ?? PrismaUserRole.SOCIETY,
       },
     });
@@ -22,6 +23,7 @@ export class PrismaUserRepository implements UserRepository {
       email: createdUser.email,
       passwordHash: createdUser.passwordHash,
       name: createdUser.name ?? undefined,
+      avatar: createdUser.avatar ?? undefined,
       role: createdUser.role as UserRole,
     };
   }
@@ -40,6 +42,7 @@ export class PrismaUserRepository implements UserRepository {
       email: user.email,
       passwordHash: user.passwordHash,
       name: user.name ?? undefined,
+      avatar: user.avatar ?? undefined,
       role: user.role as UserRole,
     };
   }

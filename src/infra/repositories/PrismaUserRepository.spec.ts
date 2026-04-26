@@ -12,6 +12,7 @@ describe("PrismaUserRepository", () => {
       email: "new@example.com",
       passwordHash: "hashed-password",
       name: "New User",
+      avatar: "https://cdn.example.com/avatar-new.png",
       role: "SOCIETY",
     });
 
@@ -25,6 +26,7 @@ describe("PrismaUserRepository", () => {
       email: "new@example.com",
       passwordHash: "hashed-password",
       name: "New User",
+      avatar: "https://cdn.example.com/avatar-new.png",
     });
 
     expect(create).toHaveBeenCalledWith({
@@ -32,6 +34,7 @@ describe("PrismaUserRepository", () => {
         email: "new@example.com",
         passwordHash: "hashed-password",
         name: "New User",
+        avatar: "https://cdn.example.com/avatar-new.png",
         role: "SOCIETY",
       },
     });
@@ -40,6 +43,7 @@ describe("PrismaUserRepository", () => {
       email: "new@example.com",
       passwordHash: "hashed-password",
       name: "New User",
+      avatar: "https://cdn.example.com/avatar-new.png",
       role: "SOCIETY",
     });
   });
@@ -66,6 +70,7 @@ describe("PrismaUserRepository", () => {
       email: "mediator@example.com",
       passwordHash: "hashed-password",
       name: "Mediator User",
+      avatar: "https://cdn.example.com/avatar-mediator.png",
       role: "MEDIATOR",
     });
 
@@ -79,6 +84,7 @@ describe("PrismaUserRepository", () => {
       email: "mediator@example.com",
       passwordHash: "hashed-password",
       name: "Mediator User",
+      avatar: "https://cdn.example.com/avatar-mediator.png",
       role: UserRole.MEDIATOR,
     });
 
@@ -87,6 +93,7 @@ describe("PrismaUserRepository", () => {
         email: "mediator@example.com",
         passwordHash: "hashed-password",
         name: "Mediator User",
+        avatar: "https://cdn.example.com/avatar-mediator.png",
         role: "MEDIATOR",
       },
     });
@@ -99,6 +106,7 @@ describe("PrismaUserRepository", () => {
       email: "existent@example.com",
       passwordHash: "hashed-password",
       name: "Test User",
+      avatar: "https://cdn.example.com/avatar-test.png",
       role: "SOCIETY",
     });
 
@@ -115,6 +123,7 @@ describe("PrismaUserRepository", () => {
       email: "existent@example.com",
       passwordHash: "hashed-password",
       name: "Test User",
+      avatar: "https://cdn.example.com/avatar-test.png",
       role: "SOCIETY",
     });
   });
@@ -125,6 +134,7 @@ describe("PrismaUserRepository", () => {
       email: "no-name@example.com",
       passwordHash: "hashed-password",
       name: null,
+      avatar: null,
       role: "SOCIETY",
     });
 
@@ -144,6 +154,7 @@ describe("PrismaUserRepository", () => {
         email: "no-name@example.com",
         passwordHash: "hashed-password",
         name: undefined,
+        avatar: undefined,
         role: "SOCIETY",
       },
     });
@@ -152,6 +163,7 @@ describe("PrismaUserRepository", () => {
       email: "no-name@example.com",
       passwordHash: "hashed-password",
       name: undefined,
+      avatar: undefined,
       role: "SOCIETY",
     });
   });
@@ -162,6 +174,7 @@ describe("PrismaUserRepository", () => {
       email: "noname@example.com",
       passwordHash: "hashed-password",
       name: null,
+      avatar: null,
       role: "SOCIETY",
     });
 
@@ -178,6 +191,7 @@ describe("PrismaUserRepository", () => {
       email: "noname@example.com",
       passwordHash: "hashed-password",
       name: undefined,
+      avatar: undefined,
       role: "SOCIETY",
     });
   });
