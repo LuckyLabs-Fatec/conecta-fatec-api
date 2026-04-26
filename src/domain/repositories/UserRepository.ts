@@ -1,9 +1,10 @@
-import { User } from "@/domain/models/User";
+import { User, UserRole } from "@/domain/models/User";
 
 export type CreateUserParams = {
   email: string;
   passwordHash: string;
   name?: string;
+  role?: UserRole;
 };
 
 export interface UserRepository {

@@ -1,4 +1,4 @@
-import { User } from "@/domain/models/User";
+import { User, UserRole } from "@/domain/models/User";
 import { CreateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
 
 export class InMemoryUserRepository implements UserRepository {
@@ -14,6 +14,7 @@ export class InMemoryUserRepository implements UserRepository {
       email: data.email,
       passwordHash: data.passwordHash,
       name: data.name,
+      role: data.role ?? UserRole.SOCIETY,
     };
 
     this.users.push(user);

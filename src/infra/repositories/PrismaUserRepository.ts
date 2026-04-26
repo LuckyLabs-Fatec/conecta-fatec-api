@@ -1,29 +1,11 @@
-import { User } from "@/domain/models/User";
+import { PrismaClient, UserRole as PrismaUserRole } from "@prisma/client";
+
+import { User, UserRole } from "@/domain/models/User";
 import { CreateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
 import { getPrismaClient } from "@/infra/database/prisma/client";
 
-type PrismaClientLike = {
-  user: {
-    findUnique(args: { where: { email: string } }): Promise<UserRecord | null>;
-    create(args: {
-      data: {
-        email: string;
-        passwordHash: string;
-        name?: string;
-      };
-    }): Promise<UserRecord>;
-  };
-};
-
-type UserRecord = {
-  id: string;
-  email: string;
-  passwordHash: string;
-  name: string | null;
-};
-
 export class PrismaUserRepository implements UserRepository {
-  constructor(private readonly db: PrismaClientLike = getPrismaClient()) {}
+  constructor(private readonly db: PrismaClient = getPrismaClient()) {}
 
   async create(data: CreateUserParams): Promise<User> {
     const createdUser = await this.db.user.create({
@@ -31,6 +13,7 @@ export class PrismaUserRepository implements UserRepository {
         email: data.email,
         passwordHash: data.passwordHash,
         name: data.name,
+        role: (data.role as PrismaUserRole | undefined) ?? PrismaUserRole.SOCIETY,
       },
     });
 
@@ -39,6 +22,7 @@ export class PrismaUserRepository implements UserRepository {
       email: createdUser.email,
       passwordHash: createdUser.passwordHash,
       name: createdUser.name ?? undefined,
+      role: createdUser.role as UserRole,
     };
   }
 
@@ -56,6 +40,7 @@ export class PrismaUserRepository implements UserRepository {
       email: user.email,
       passwordHash: user.passwordHash,
       name: user.name ?? undefined,
+      role: user.role as UserRole,
     };
   }
 }
