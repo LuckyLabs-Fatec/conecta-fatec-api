@@ -2,20 +2,25 @@ import { Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { faker } from "@faker-js/faker";
 
-import { CreateProposalContract, ProposalController } from "./ProposalController";
+import { CreateProposalContract, ListProposalsContract, ProposalController } from "./ProposalController";
 
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
 
 describe("ProposalController", () => {
   let proposalController: ProposalController;
   let createProposalMock: CreateProposalContract;
+  let listProposalsMock: ListProposalsContract;
 
   beforeEach(() => {
     createProposalMock = {
       execute: vi.fn(),
     };
 
-    proposalController = new ProposalController(createProposalMock);
+    listProposalsMock = {
+      execute: vi.fn(),
+    };
+
+    proposalController = new ProposalController(createProposalMock, listProposalsMock);
   });
 
   it("should return 400 when required fields are missing", async () => {
@@ -235,5 +240,68 @@ describe("ProposalController", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ message: "Attachments must be a Buffer or base64 string" });
     expect(createProposalMock.execute).not.toHaveBeenCalled();
+  });
+
+  it("should return 200 and proposal list on success", async () => {
+    const firstSubmissionDate = new Date("2026-04-26T10:00:00.000Z");
+    const secondSubmissionDate = new Date("2026-04-25T09:30:00.000Z");
+    const firstAttachments = Buffer.from("first-content");
+    const secondAttachments = Buffer.from("second-content");
+
+    vi.mocked(listProposalsMock.execute).mockResolvedValue([
+      {
+        id: faker.string.uuid(),
+        title: faker.lorem.words(3),
+        description: faker.lorem.paragraph(),
+        submissionDate: firstSubmissionDate,
+        status: "SUBMITTED",
+        attachments: firstAttachments,
+      },
+      {
+        id: faker.string.uuid(),
+        title: faker.lorem.words(3),
+        description: faker.lorem.paragraph(),
+        submissionDate: secondSubmissionDate,
+        status: "APPROVED",
+        attachments: secondAttachments,
+      },
+    ]);
+
+    const req = {} as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.list(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          attachments: firstAttachments.toString("base64"),
+        }),
+        expect.objectContaining({
+          attachments: secondAttachments.toString("base64"),
+        }),
+      ]),
+    );
+  });
+
+  it("should return mapped error when list proposals fails with known error", async () => {
+    vi.mocked(listProposalsMock.execute).mockRejectedValue(new InvalidProposalPayloadError());
+
+    const req = {} as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.list(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Invalid proposal payload" });
   });
 });
