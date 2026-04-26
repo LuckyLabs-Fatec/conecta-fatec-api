@@ -318,6 +318,60 @@ describe("ProposalController", () => {
     expect(listProposalsMock.execute).not.toHaveBeenCalled();
   });
 
+  it("should return 400 when pagination limit is greater than 100", async () => {
+    const req = {
+      query: {
+        page: "1",
+        limit: "101",
+      },
+    } as unknown as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.list(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Limit must be less than or equal to 100" });
+    expect(listProposalsMock.execute).not.toHaveBeenCalled();
+  });
+
+  it("should parse explicit pagination values", async () => {
+    vi.mocked(listProposalsMock.execute).mockResolvedValue({
+      items: [],
+      page: 2,
+      limit: 20,
+      totalItems: 0,
+      totalPages: 0,
+    });
+
+    const req = {
+      query: {
+        page: "2",
+        limit: "20",
+      },
+    } as unknown as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.list(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(listProposalsMock.execute).toHaveBeenCalledWith({ page: 2, limit: 20 });
+    expect(res.json).toHaveBeenCalledWith({
+      items: [],
+      page: 2,
+      limit: 20,
+      totalItems: 0,
+      totalPages: 0,
+    });
+  });
+
   it("should return mapped error when list proposals fails with known error", async () => {
     vi.mocked(listProposalsMock.execute).mockRejectedValue(new InvalidProposalPayloadError());
 
