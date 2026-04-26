@@ -1,4 +1,5 @@
 import { Proposal } from "@/domain/models/Proposal";
+import { UserRole } from "@/domain/models/User";
 import {
   CreateProposalParams,
   ListProposalsParams,
@@ -16,6 +17,14 @@ type PrismaClientLike = {
         submissionDate: Date;
         status: string;
         attachments: Buffer;
+        createdBy: {
+          connect: {
+            id: string;
+          };
+        };
+      };
+      include: {
+        createdBy: true;
       };
     }): Promise<ProposalRecord>;
     findMany(args?: {
@@ -24,9 +33,20 @@ type PrismaClientLike = {
       orderBy?: {
         submissionDate?: "asc" | "desc";
       };
+      include?: {
+        createdBy?: true;
+      };
     }): Promise<ProposalRecord[]>;
     count(): Promise<number>;
   };
+};
+
+type UserRecord = {
+  id: string;
+  email: string;
+  name: string | null;
+  avatar: string | null;
+  role: UserRole;
 };
 
 type ProposalRecord = {
@@ -36,6 +56,7 @@ type ProposalRecord = {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  createdBy: UserRecord;
 };
 
 export class PrismaProposalRepository implements ProposalRepository {
@@ -51,6 +72,14 @@ export class PrismaProposalRepository implements ProposalRepository {
         submissionDate: data.submissionDate,
         status: data.status,
         attachments: data.attachments,
+        createdBy: {
+          connect: {
+            id: data.createdByUserId,
+          },
+        },
+      },
+      include: {
+        createdBy: true,
       },
     });
 
@@ -61,6 +90,13 @@ export class PrismaProposalRepository implements ProposalRepository {
       submissionDate: createdProposal.submissionDate,
       status: createdProposal.status,
       attachments: createdProposal.attachments,
+      user: {
+        id: createdProposal.createdBy.id,
+        email: createdProposal.createdBy.email,
+        name: createdProposal.createdBy.name ?? undefined,
+        avatar: createdProposal.createdBy.avatar ?? undefined,
+        role: createdProposal.createdBy.role,
+      },
     };
   }
 
@@ -75,6 +111,9 @@ export class PrismaProposalRepository implements ProposalRepository {
         orderBy: {
           submissionDate: "desc",
         },
+        include: {
+          createdBy: true,
+        },
       }),
     ]);
 
@@ -88,6 +127,13 @@ export class PrismaProposalRepository implements ProposalRepository {
         submissionDate: proposal.submissionDate,
         status: proposal.status,
         attachments: proposal.attachments,
+        user: {
+          id: proposal.createdBy.id,
+          email: proposal.createdBy.email,
+          name: proposal.createdBy.name ?? undefined,
+          avatar: proposal.createdBy.avatar ?? undefined,
+          role: proposal.createdBy.role,
+        },
       })),
       page: params.page,
       limit: params.limit,

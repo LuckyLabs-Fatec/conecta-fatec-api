@@ -79,6 +79,9 @@ describe("ensureAuthenticatedCommunityUser", () => {
     );
 
     const req = {
+      body: {
+        title: "proposal",
+      },
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -92,7 +95,32 @@ describe("ensureAuthenticatedCommunityUser", () => {
     ensureAuthenticatedCommunityUser(req, res, next);
 
     expect(next).toHaveBeenCalledTimes(1);
+    expect(req.body).toEqual({ title: "proposal", createdByUserId: "user-id" });
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
+  });
+
+  it("should return 401 when token has no subject", () => {
+    const token = sign(
+      { email: "society@example.com", role: UserRole.SOCIETY },
+      process.env.JWT_SECRET as string,
+    );
+
+    const req = {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn() as unknown as NextFunction;
+
+    ensureAuthenticatedCommunityUser(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ message: "Invalid or expired token" });
+    expect(next).not.toHaveBeenCalled();
   });
 });

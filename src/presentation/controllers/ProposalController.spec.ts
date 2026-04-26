@@ -5,6 +5,7 @@ import { faker } from "@faker-js/faker";
 import { CreateProposalContract, ListProposalsContract, ProposalController } from "./ProposalController";
 
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
+import { UserRole } from "@/domain/models/User";
 
 describe("ProposalController", () => {
   let proposalController: ProposalController;
@@ -65,6 +66,7 @@ describe("ProposalController", () => {
         submissionDate: "invalid-date",
         status: "SUBMITTED",
         attachments: Buffer.from("content"),
+        createdByUserId: faker.string.uuid(),
       },
     } as Request;
 
@@ -90,6 +92,7 @@ describe("ProposalController", () => {
         submissionDate: new Date().toISOString(),
         status: "SUBMITTED",
         attachments: Buffer.from("content").toString("base64"),
+        createdByUserId: faker.string.uuid(),
       },
     } as Request;
 
@@ -114,6 +117,7 @@ describe("ProposalController", () => {
         submissionDate: new Date().toISOString(),
         status: "SUBMITTED",
         attachments: Buffer.from("content"),
+        createdByUserId: faker.string.uuid(),
       },
     } as Request;
 
@@ -139,6 +143,13 @@ describe("ProposalController", () => {
       submissionDate: now,
       status: "SUBMITTED",
       attachments,
+      user: {
+        id: faker.string.uuid(),
+        email: faker.internet.email(),
+        name: faker.person.fullName(),
+        avatar: faker.internet.url(),
+        role: UserRole.SOCIETY,
+      },
     });
 
     const req = {
@@ -148,6 +159,7 @@ describe("ProposalController", () => {
         submissionDate: now.toISOString(),
         status: "SUBMITTED",
         attachments: attachments.toString("base64"),
+        createdByUserId: faker.string.uuid(),
       },
     } as Request;
 
@@ -165,6 +177,7 @@ describe("ProposalController", () => {
         description: req.body.description,
         status: req.body.status,
         attachments,
+        createdByUserId: req.body.createdByUserId,
       }),
     );
     expect(res.json).toHaveBeenCalledWith(
@@ -172,6 +185,11 @@ describe("ProposalController", () => {
         id: expect.any(String),
         submissionDate: now,
         attachments: attachments.toString("base64"),
+        user: expect.objectContaining({
+          id: expect.any(String),
+          email: expect.any(String),
+          role: UserRole.SOCIETY,
+        }),
       }),
     );
   });
@@ -187,6 +205,13 @@ describe("ProposalController", () => {
       submissionDate: now,
       status: "SUBMITTED",
       attachments,
+      user: {
+        id: faker.string.uuid(),
+        email: faker.internet.email(),
+        name: faker.person.fullName(),
+        avatar: faker.internet.url(),
+        role: UserRole.SOCIETY,
+      },
     });
 
     const req = {
@@ -196,6 +221,7 @@ describe("ProposalController", () => {
         submissionDate: now.toISOString(),
         status: "SUBMITTED",
         attachments,
+        createdByUserId: faker.string.uuid(),
       },
     } as Request;
 
@@ -209,6 +235,7 @@ describe("ProposalController", () => {
     expect(createProposalMock.execute).toHaveBeenCalledWith(
       expect.objectContaining({
         attachments,
+        createdByUserId: req.body.createdByUserId,
       }),
     );
     expect(res.status).toHaveBeenCalledWith(201);
@@ -227,6 +254,7 @@ describe("ProposalController", () => {
         submissionDate: new Date().toISOString(),
         status: "SUBMITTED",
         attachments: 123,
+        createdByUserId: faker.string.uuid(),
       },
     } as Request;
 
@@ -257,6 +285,13 @@ describe("ProposalController", () => {
           submissionDate: firstSubmissionDate,
           status: "SUBMITTED",
           attachments: firstAttachments,
+          user: {
+            id: faker.string.uuid(),
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+            avatar: faker.internet.url(),
+            role: UserRole.SOCIETY,
+          },
         },
         {
           id: faker.string.uuid(),
@@ -265,6 +300,13 @@ describe("ProposalController", () => {
           submissionDate: secondSubmissionDate,
           status: "APPROVED",
           attachments: secondAttachments,
+          user: {
+            id: faker.string.uuid(),
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+            avatar: faker.internet.url(),
+            role: UserRole.STUDENT,
+          },
         },
       ],
       page: 1,
@@ -288,8 +330,14 @@ describe("ProposalController", () => {
     expect(listProposalsMock.execute).toHaveBeenCalledWith({ page: 1, limit: 10 });
     expect(res.json).toHaveBeenCalledWith({
       items: expect.arrayContaining([
-        expect.objectContaining({ attachments: firstAttachments.toString("base64") }),
-        expect.objectContaining({ attachments: secondAttachments.toString("base64") }),
+        expect.objectContaining({
+          attachments: firstAttachments.toString("base64"),
+          user: expect.objectContaining({ role: UserRole.SOCIETY }),
+        }),
+        expect.objectContaining({
+          attachments: secondAttachments.toString("base64"),
+          user: expect.objectContaining({ role: UserRole.STUDENT }),
+        }),
       ]),
       page: 1,
       limit: 10,

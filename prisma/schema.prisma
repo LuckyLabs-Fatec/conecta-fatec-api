@@ -23,6 +23,7 @@ model User {
   role         UserRole @default(SOCIETY)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  proposals    Proposal[]
 
   @@map("users")
 }
@@ -34,6 +35,8 @@ model Proposal {
   submissionDate DateTime @map("submission_date")
   status         String   @db.VarChar(100) @map("status")
   attachments    Bytes    @map("attachments")
+  createdByUserId String  @db.Uuid @map("created_by_user_id")
+  createdBy      User     @relation(fields: [createdByUserId], references: [id])
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 

@@ -1,3 +1,13 @@
+import { UserRole } from "@/domain/models/User";
+
+export interface ProposalUser {
+  id: string;
+  email: string;
+  name?: string;
+  avatar?: string;
+  role: UserRole;
+}
+
 export interface Proposal {
   id: string;
   title: string;
@@ -5,4 +15,5 @@ export interface Proposal {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  user: ProposalUser;
 }

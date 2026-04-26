@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
+import { JwtPayload, verify } from "jsonwebtoken";
 
 import { UserRole } from "@/domain/models/User";
 
-type AuthTokenPayload = {
+type AuthTokenPayload = JwtPayload & {
   role?: UserRole;
 };
 
@@ -47,6 +47,16 @@ export function ensureAuthenticatedCommunityUser(
       res.status(403).json({ message: "Only community users can create proposals" });
       return;
     }
+
+    if (typeof payload.sub !== "string" || !payload.sub) {
+      res.status(401).json({ message: "Invalid or expired token" });
+      return;
+    }
+
+    req.body = {
+      ...(req.body ?? {}),
+      createdByUserId: payload.sub,
+    };
 
     next();
   } catch {

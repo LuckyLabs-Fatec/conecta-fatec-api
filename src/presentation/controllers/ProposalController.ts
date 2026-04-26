@@ -1,7 +1,16 @@
 import { Request, Response } from "express";
 
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
+import { UserRole } from "@/domain/models/User";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
+
+export type ProposalAuthorResponse = {
+  id: string;
+  email: string;
+  name?: string;
+  avatar?: string;
+  role: UserRole;
+};
 
 export type ProposalResponse = {
   id: string;
@@ -10,6 +19,7 @@ export type ProposalResponse = {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  user: ProposalAuthorResponse;
 };
 
 export type CreateProposalRequest = {
@@ -18,6 +28,7 @@ export type CreateProposalRequest = {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  createdByUserId: string;
 };
 
 export type CreateProposalContract = {
@@ -54,10 +65,17 @@ export class ProposalController {
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
-    const { title, description, submissionDate, status, attachments } = req.body ?? {};
+    const { title, description, submissionDate, status, attachments, createdByUserId } = req.body ?? {};
 
     try {
-      this.validateRequiredFields({ title, description, submissionDate, status, attachments });
+      this.validateRequiredFields({
+        title,
+        description,
+        submissionDate,
+        status,
+        attachments,
+        createdByUserId,
+      });
 
       const parsedSubmissionDate = new Date(submissionDate);
 
@@ -73,6 +91,7 @@ export class ProposalController {
         submissionDate: parsedSubmissionDate,
         status,
         attachments: normalizedAttachments,
+        createdByUserId,
       });
 
       res.status(201).json(this.serializeProposal(proposal));
@@ -108,10 +127,18 @@ export class ProposalController {
     submissionDate?: unknown;
     status?: unknown;
     attachments?: unknown;
+    createdByUserId?: unknown;
   }) {
-    const { title, description, submissionDate, status, attachments } = fields;
+    const { title, description, submissionDate, status, attachments, createdByUserId } = fields;
 
-    if (!title || !description || !submissionDate || !status || attachments === undefined) {
+    if (
+      !title ||
+      !description ||
+      !submissionDate ||
+      !status ||
+      attachments === undefined ||
+      !createdByUserId
+    ) {
       throw new InvalidProposalPayloadError("Missing required fields");
     }
   }
@@ -161,6 +188,7 @@ export class ProposalController {
       submissionDate: proposal.submissionDate,
       status: proposal.status,
       attachments: proposal.attachments.toString("base64"),
+      user: proposal.user,
     };
   }
 }

@@ -38,6 +38,7 @@ const proposals = [
     submissionDate: new Date("2026-04-20T10:00:00.000Z"),
     status: "SUBMITTED",
     attachments: Buffer.from("plano-de-mobilidade-v1", "utf-8"),
+    createdByUserId: "d1111111-1111-4111-8111-111111111111",
   },
   {
     id: "4ac2a8f0-6e35-4c6b-8a44-c1e8a954b002",
@@ -46,6 +47,7 @@ const proposals = [
     submissionDate: new Date("2026-04-22T14:30:00.000Z"),
     status: "IN_REVIEW",
     attachments: Buffer.from("anexos-programa-reciclagem", "utf-8"),
+    createdByUserId: "d2222222-2222-4222-8222-222222222222",
   },
   {
     id: "8d9b93f2-cf3a-4d84-b76f-17ecaf6ab003",
@@ -54,6 +56,7 @@ const proposals = [
     submissionDate: new Date("2026-04-24T09:15:00.000Z"),
     status: "APPROVED",
     attachments: Buffer.from("material-inclusao-digital", "utf-8"),
+    createdByUserId: "d1111111-1111-4111-8111-111111111111",
   },
   {
     id: "c0f7b2d1-5b3e-4f0d-9f7a-6b4b9b8dc004",
@@ -62,6 +65,7 @@ const proposals = [
     submissionDate: new Date("2026-04-25T13:40:00.000Z"),
     status: "SUBMITTED",
     attachments: Buffer.from("projeto-horta-comunitaria", "utf-8"),
+    createdByUserId: "d3333333-3333-4333-8333-333333333333",
   },
   {
     id: "f1a8d3e4-9c0b-4ad8-8c2e-7a3a0f6dd005",
@@ -70,6 +74,7 @@ const proposals = [
     submissionDate: new Date("2026-04-26T08:20:00.000Z"),
     status: "IN_REVIEW",
     attachments: Buffer.from("roteiro-apoio-psicologico", "utf-8"),
+    createdByUserId: "d2222222-2222-4222-8222-222222222222",
   },
   {
     id: "a7b6c5d4-e3f2-4a19-b8c7-9d0e1f2a3b006",
@@ -78,6 +83,7 @@ const proposals = [
     submissionDate: new Date("2026-04-27T16:10:00.000Z"),
     status: "APPROVED",
     attachments: Buffer.from("laboratorio-aberto-inovacao", "utf-8"),
+    createdByUserId: "d1111111-1111-4111-8111-111111111111",
   },
   {
     id: "b9c8d7e6-f5a4-4b3c-9d2e-1f0a2b3c4d007",
@@ -86,6 +92,7 @@ const proposals = [
     submissionDate: new Date("2026-04-28T11:05:00.000Z"),
     status: "REJECTED",
     attachments: Buffer.from("campanha-economia-energia", "utf-8"),
+    createdByUserId: "d3333333-3333-4333-8333-333333333333",
   },
 ];
 
@@ -121,8 +128,25 @@ async function main() {
         submissionDate: proposal.submissionDate,
         status: proposal.status,
         attachments: proposal.attachments,
+        createdBy: {
+          connect: {
+            id: proposal.createdByUserId,
+          },
+        },
       },
-      create: proposal,
+      create: {
+        id: proposal.id,
+        title: proposal.title,
+        description: proposal.description,
+        submissionDate: proposal.submissionDate,
+        status: proposal.status,
+        attachments: proposal.attachments,
+        createdBy: {
+          connect: {
+            id: proposal.createdByUserId,
+          },
+        },
+      },
     });
   }
 

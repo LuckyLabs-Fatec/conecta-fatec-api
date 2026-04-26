@@ -6,6 +6,7 @@ export type CreateProposalParams = {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  createdByUserId: string;
 };
 
 export type ListProposalsParams = {

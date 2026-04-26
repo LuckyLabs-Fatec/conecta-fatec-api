@@ -17,6 +17,7 @@ export function makeProposalController(): ProposalController {
           submissionDate: data.submissionDate,
           status: data.status,
           attachments: data.attachments,
+          createdByUserId: data.createdByUserId,
         });
 
         return {
@@ -26,6 +27,7 @@ export function makeProposalController(): ProposalController {
           submissionDate: createdProposal.submissionDate,
           status: createdProposal.status,
           attachments: createdProposal.attachments,
+          user: createdProposal.user,
         };
       },
     },
