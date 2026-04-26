@@ -3,6 +3,7 @@ import { faker } from "@faker-js/faker";
 
 import { AuthenticateUser } from "./AuthenticateUser";
 
+import { UserRole } from "@/domain/models/User";
 import { InMemoryUserRepository } from "@/test/doubles/InMemoryUserRepository";
 
 class FakeHashComparer {
@@ -28,6 +29,7 @@ const setupUser = async (repo: InMemoryUserRepository) => {
         id,
         email,
         passwordHash,
+        role: UserRole.SOCIETY,
     });
 
     return { id, email, passwordHash };
