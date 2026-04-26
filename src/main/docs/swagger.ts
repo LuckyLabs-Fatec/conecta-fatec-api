@@ -10,6 +10,13 @@ const swaggerDocument = {
     { name: "Proposals", description: "Gerenciamento de propostas" },
   ],
   components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
     schemas: {
       ErrorResponse: {
         type: "object",
@@ -377,6 +384,8 @@ const swaggerDocument = {
       post: {
         tags: ["Proposals"],
         summary: "Cria uma nova proposta",
+        description: "Requer autenticação via JWT e perfil de comunidade (SOCIETY).",
+        security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
           content: {
@@ -400,6 +409,26 @@ const swaggerDocument = {
           },
           400: {
             description: "Payload inválido",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ErrorResponse",
+                },
+              },
+            },
+          },
+          401: {
+            description: "Usuário não autenticado ou token inválido",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ErrorResponse",
+                },
+              },
+            },
+          },
+          403: {
+            description: "Apenas usuários da comunidade podem postar propostas",
             content: {
               "application/json": {
                 schema: {
