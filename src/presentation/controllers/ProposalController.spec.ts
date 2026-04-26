@@ -248,26 +248,34 @@ describe("ProposalController", () => {
     const firstAttachments = Buffer.from("first-content");
     const secondAttachments = Buffer.from("second-content");
 
-    vi.mocked(listProposalsMock.execute).mockResolvedValue([
-      {
-        id: faker.string.uuid(),
-        title: faker.lorem.words(3),
-        description: faker.lorem.paragraph(),
-        submissionDate: firstSubmissionDate,
-        status: "SUBMITTED",
-        attachments: firstAttachments,
-      },
-      {
-        id: faker.string.uuid(),
-        title: faker.lorem.words(3),
-        description: faker.lorem.paragraph(),
-        submissionDate: secondSubmissionDate,
-        status: "APPROVED",
-        attachments: secondAttachments,
-      },
-    ]);
+    vi.mocked(listProposalsMock.execute).mockResolvedValue({
+      items: [
+        {
+          id: faker.string.uuid(),
+          title: faker.lorem.words(3),
+          description: faker.lorem.paragraph(),
+          submissionDate: firstSubmissionDate,
+          status: "SUBMITTED",
+          attachments: firstAttachments,
+        },
+        {
+          id: faker.string.uuid(),
+          title: faker.lorem.words(3),
+          description: faker.lorem.paragraph(),
+          submissionDate: secondSubmissionDate,
+          status: "APPROVED",
+          attachments: secondAttachments,
+        },
+      ],
+      page: 1,
+      limit: 10,
+      totalItems: 2,
+      totalPages: 1,
+    });
 
-    const req = {} as Request;
+    const req = {
+      query: {},
+    } as unknown as Request;
 
     const res = {
       status: vi.fn().mockReturnThis(),
@@ -277,22 +285,45 @@ describe("ProposalController", () => {
     await proposalController.list(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          attachments: firstAttachments.toString("base64"),
-        }),
-        expect.objectContaining({
-          attachments: secondAttachments.toString("base64"),
-        }),
+    expect(listProposalsMock.execute).toHaveBeenCalledWith({ page: 1, limit: 10 });
+    expect(res.json).toHaveBeenCalledWith({
+      items: expect.arrayContaining([
+        expect.objectContaining({ attachments: firstAttachments.toString("base64") }),
+        expect.objectContaining({ attachments: secondAttachments.toString("base64") }),
       ]),
-    );
+      page: 1,
+      limit: 10,
+      totalItems: 2,
+      totalPages: 1,
+    });
+  });
+
+  it("should return 400 when pagination query is invalid", async () => {
+    const req = {
+      query: {
+        page: "0",
+        limit: "10",
+      },
+    } as unknown as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.list(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Pagination parameters must be positive integers" });
+    expect(listProposalsMock.execute).not.toHaveBeenCalled();
   });
 
   it("should return mapped error when list proposals fails with known error", async () => {
     vi.mocked(listProposalsMock.execute).mockRejectedValue(new InvalidProposalPayloadError());
 
-    const req = {} as Request;
+    const req = {
+      query: {},
+    } as unknown as Request;
 
     const res = {
       status: vi.fn().mockReturnThis(),

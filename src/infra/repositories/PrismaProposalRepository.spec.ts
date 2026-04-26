@@ -17,7 +17,7 @@ describe("PrismaProposalRepository", () => {
     });
 
     const sut = new PrismaProposalRepository({
-      proposal: { create, findMany: vi.fn() },
+      proposal: { create, findMany: vi.fn(), count: vi.fn() },
     });
 
     const proposal = await sut.create({
@@ -48,7 +48,7 @@ describe("PrismaProposalRepository", () => {
     });
   });
 
-  it("should find all and return mapped proposals ordered by submission date", async () => {
+  it("should find paginated proposals and return mapped data", async () => {
     const firstSubmissionDate = new Date("2026-04-26T12:00:00.000Z");
     const secondSubmissionDate = new Date("2026-04-25T12:00:00.000Z");
 
@@ -72,33 +72,41 @@ describe("PrismaProposalRepository", () => {
     ]);
 
     const sut = new PrismaProposalRepository({
-      proposal: { create: vi.fn(), findMany },
+      proposal: { create: vi.fn(), findMany, count: vi.fn().mockResolvedValue(12) },
     });
 
-    const proposals = await sut.findAll();
+    const paginated = await sut.findPaginated({ page: 2, limit: 5 });
 
+    expect(paginated).toEqual({
+      items: [
+        {
+          id: "proposal-1",
+          title: "First Proposal",
+          description: "First description",
+          submissionDate: firstSubmissionDate,
+          status: "SUBMITTED",
+          attachments: Buffer.from("first-file"),
+        },
+        {
+          id: "proposal-2",
+          title: "Second Proposal",
+          description: "Second description",
+          submissionDate: secondSubmissionDate,
+          status: "APPROVED",
+          attachments: Buffer.from("second-file"),
+        },
+      ],
+      page: 2,
+      limit: 5,
+      totalItems: 12,
+      totalPages: 3,
+    });
     expect(findMany).toHaveBeenCalledWith({
+      skip: 5,
+      take: 5,
       orderBy: {
         submissionDate: "desc",
       },
     });
-    expect(proposals).toEqual([
-      {
-        id: "proposal-1",
-        title: "First Proposal",
-        description: "First description",
-        submissionDate: firstSubmissionDate,
-        status: "SUBMITTED",
-        attachments: Buffer.from("first-file"),
-      },
-      {
-        id: "proposal-2",
-        title: "Second Proposal",
-        description: "Second description",
-        submissionDate: secondSubmissionDate,
-        status: "APPROVED",
-        attachments: Buffer.from("second-file"),
-      },
-    ]);
   });
 });
