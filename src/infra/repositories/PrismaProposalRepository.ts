@@ -16,6 +16,11 @@ type PrismaClientLike = {
         attachments: Buffer;
       };
     }): Promise<ProposalRecord>;
+    findMany(args?: {
+      orderBy?: {
+        submissionDate?: "asc" | "desc";
+      };
+    }): Promise<ProposalRecord[]>;
   };
 };
 
@@ -52,5 +57,22 @@ export class PrismaProposalRepository implements ProposalRepository {
       status: createdProposal.status,
       attachments: createdProposal.attachments,
     };
+  }
+
+  async findAll(): Promise<Proposal[]> {
+    const proposals = await this.db.proposal.findMany({
+      orderBy: {
+        submissionDate: "desc",
+      },
+    });
+
+    return proposals.map((proposal) => ({
+      id: proposal.id,
+      title: proposal.title,
+      description: proposal.description,
+      submissionDate: proposal.submissionDate,
+      status: proposal.status,
+      attachments: proposal.attachments,
+    }));
   }
 }

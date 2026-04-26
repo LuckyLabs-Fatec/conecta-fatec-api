@@ -3,15 +3,7 @@ import { Request, Response } from "express";
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
-export type CreateProposalRequest = {
-  title: string;
-  description: string;
-  submissionDate: Date;
-  status: string;
-  attachments: Buffer;
-};
-
-export type CreateProposalResponse = {
+export type ProposalResponse = {
   id: string;
   title: string;
   description: string;
@@ -20,12 +12,27 @@ export type CreateProposalResponse = {
   attachments: Buffer;
 };
 
+export type CreateProposalRequest = {
+  title: string;
+  description: string;
+  submissionDate: Date;
+  status: string;
+  attachments: Buffer;
+};
+
 export type CreateProposalContract = {
-  execute(data: CreateProposalRequest): Promise<CreateProposalResponse>;
+  execute(data: CreateProposalRequest): Promise<ProposalResponse>;
+};
+
+export type ListProposalsContract = {
+  execute(): Promise<ProposalResponse[]>;
 };
 
 export class ProposalController {
-  constructor(private readonly createProposal: CreateProposalContract) {}
+  constructor(
+    private readonly createProposal: CreateProposalContract,
+    private readonly listProposals: ListProposalsContract,
+  ) {}
 
   async create(req: Request, res: Response): Promise<void> {
     const { title, description, submissionDate, status, attachments } = req.body ?? {};
@@ -49,14 +56,19 @@ export class ProposalController {
         attachments: normalizedAttachments,
       });
 
-      res.status(201).json({
-        id: proposal.id,
-        title: proposal.title,
-        description: proposal.description,
-        submissionDate: proposal.submissionDate,
-        status: proposal.status,
-        attachments: proposal.attachments.toString("base64"),
-      });
+      res.status(201).json(this.serializeProposal(proposal));
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
+  async list(_req: Request, res: Response): Promise<void> {
+    try {
+      const proposals = await this.listProposals.execute();
+
+      res.status(200).json(proposals.map((proposal) => this.serializeProposal(proposal)));
     } catch (error: unknown) {
       const statusCode = HttpErrorMapper.getStatusCode(error);
       const message = HttpErrorMapper.getMessage(error);
@@ -88,5 +100,16 @@ export class ProposalController {
     }
 
     throw new InvalidProposalPayloadError("Attachments must be a Buffer or base64 string");
+  }
+
+  private serializeProposal(proposal: ProposalResponse) {
+    return {
+      id: proposal.id,
+      title: proposal.title,
+      description: proposal.description,
+      submissionDate: proposal.submissionDate,
+      status: proposal.status,
+      attachments: proposal.attachments.toString("base64"),
+    };
   }
 }

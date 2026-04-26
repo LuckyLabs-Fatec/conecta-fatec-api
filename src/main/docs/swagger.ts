@@ -147,6 +147,39 @@ const swaggerDocument = {
         },
         required: ["id", "title", "description", "submissionDate", "status", "attachments"],
       },
+      ProposalListItem: {
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            format: "uuid",
+            example: "1f4d3c20-7f52-4c1f-b9ef-93cd5b8db001",
+          },
+          title: {
+            type: "string",
+            example: "Mobilidade Inteligente no Campus",
+          },
+          description: {
+            type: "string",
+            example: "Uma proposta para otimizar o transporte interno e a acessibilidade no campus.",
+          },
+          submissionDate: {
+            type: "string",
+            format: "date-time",
+            example: "2026-04-26T10:00:00.000Z",
+          },
+          status: {
+            type: "string",
+            example: "SUBMITTED",
+          },
+          attachments: {
+            type: "string",
+            format: "byte",
+            example: "cGxhbm8tZGUtbW9iaWxpZGFkZS12MQ==",
+          },
+        },
+        required: ["id", "title", "description", "submissionDate", "status", "attachments"],
+      },
       RootResponse: {
         type: "object",
         properties: {
@@ -257,6 +290,35 @@ const swaggerDocument = {
       },
     },
     "/proposals": {
+      get: {
+        tags: ["Proposals"],
+        summary: "Lista todas as propostas",
+        responses: {
+          200: {
+            description: "Lista de propostas",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: {
+                    $ref: "#/components/schemas/ProposalListItem",
+                  },
+                },
+              },
+            },
+          },
+          500: {
+            description: "Erro interno",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ErrorResponse",
+                },
+              },
+            },
+          },
+        },
+      },
       post: {
         tags: ["Proposals"],
         summary: "Cria uma nova proposta",

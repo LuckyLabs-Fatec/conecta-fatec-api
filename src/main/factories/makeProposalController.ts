@@ -2,12 +2,14 @@ import { PrismaProposalRepository } from "@/infra/repositories/PrismaProposalRep
 import {
   CreateProposalRequest,
   ProposalController,
+  ProposalResponse,
 } from "@/presentation/controllers/ProposalController";
 
 export function makeProposalController(): ProposalController {
   const proposalRepository = new PrismaProposalRepository();
 
-  return new ProposalController({
+  return new ProposalController(
+    {
     async execute(data: CreateProposalRequest) {
       const createdProposal = await proposalRepository.create({
         title: data.title,
@@ -26,5 +28,11 @@ export function makeProposalController(): ProposalController {
         attachments: createdProposal.attachments,
       };
     },
-  });
+    },
+    {
+      async execute(): Promise<ProposalResponse[]> {
+        return proposalRepository.findAll();
+      },
+    },
+  );
 }

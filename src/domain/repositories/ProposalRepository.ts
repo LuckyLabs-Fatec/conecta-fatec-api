@@ -10,4 +10,5 @@ export type CreateProposalParams = {
 
 export interface ProposalRepository {
   create(data: CreateProposalParams): Promise<Proposal>;
+  findAll(): Promise<Proposal[]>;
 }
