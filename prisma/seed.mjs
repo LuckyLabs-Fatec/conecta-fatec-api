@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { hash } from "bcryptjs";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaClient } from "@prisma/client";
 
@@ -10,6 +11,30 @@ if (!connectionString) {
 
 const adapter = new PrismaNeon({ connectionString });
 const prisma = new PrismaClient({ adapter });
+
+const users = [
+  {
+    id: "d1111111-1111-4111-8111-111111111111",
+    email: "society@example.com",
+    password: "society123",
+    name: "Representante da Sociedade",
+    role: "SOCIETY",
+  },
+  {
+    id: "d2222222-2222-4222-8222-222222222222",
+    email: "mediator@example.com",
+    password: "mediator123",
+    name: "Pessoa Mediadora",
+    role: "MEDIATOR",
+  },
+  {
+    id: "d3333333-3333-4333-8333-333333333333",
+    email: "student@example.com",
+    password: "student123",
+    name: "Estudante Exemplo",
+    role: "STUDENT",
+  },
+];
 
 const proposals = [
   {
@@ -71,6 +96,26 @@ const proposals = [
 ];
 
 async function main() {
+  for (const user of users) {
+    const passwordHash = await hash(user.password, 8);
+
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: {
+        name: user.name,
+        passwordHash,
+        role: user.role,
+      },
+      create: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        passwordHash,
+        role: user.role,
+      },
+    });
+  }
+
   for (const proposal of proposals) {
     await prisma.proposal.upsert({
       where: { id: proposal.id },
@@ -85,7 +130,7 @@ async function main() {
     });
   }
 
-  console.log(`Seed concluído: ${proposals.length} propostas inseridas/atualizadas.`);
+  console.log(`Seed concluído: ${users.length} usuários e ${proposals.length} propostas inseridos/atualizados.`);
 }
 
 main()
