@@ -78,7 +78,7 @@ const proposals = [
     attachments: Buffer.from("roteiro-apoio-psicologico", "utf-8"),
   },
   {
-    id: "a7b6c5d4-e3f2-4a19-b8c7-9d0e1f2a3b006",
+    id: "a7b6c5d4-e3f2-4a19-b8c7-9d0e1f2a3b06",
     title: "Laboratório Aberto de Inovação",
     description: "Uma proposta para abrir um espaço colaborativo voltado a prototipagem e soluções para a comunidade.",
     submissionDate: new Date("2026-04-27T16:10:00.000Z"),
@@ -86,7 +86,7 @@ const proposals = [
     attachments: Buffer.from("laboratorio-aberto-inovacao", "utf-8"),
   },
   {
-    id: "b9c8d7e6-f5a4-4b3c-9d2e-1f0a2b3c4d007",
+    id: "b9c8d7e6-f5a4-4b3c-9d2e-1f0a2b3c4d07",
     title: "Campanha de Economia de Energia",
     description: "Uma proposta para reduzir o consumo de energia com ações educativas e melhorias operacionais.",
     submissionDate: new Date("2026-04-28T11:05:00.000Z"),
