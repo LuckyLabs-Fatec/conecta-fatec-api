@@ -15,30 +15,102 @@ enum UserRole {
 }
 
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String   @unique @db.VarChar(255)
-  passwordHash String   @db.VarChar(255)
-  name         String?  @db.VarChar(255)
-  avatar       String?  @db.VarChar(2048)
-  role         UserRole @default(SOCIETY)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  proposals    Proposal[]
+  id              String           @id @default(uuid()) @db.Uuid
+  email           String           @unique @db.VarChar(255)
+  passwordHash    String           @db.VarChar(255)
+  name            String?          @db.VarChar(255)
+  avatar          String?          @db.VarChar(2048)
+  phone           String           @map("telefone") @db.VarChar(15)
+  phoneIsWhats    Boolean          @default(false) @map("telefone_is_whats")
+  role            UserRole         @default(SOCIETY)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  proposals       Proposal[]
+  notifications   Notification[]
+  feedbacks       Feedback[]
+  projectStudents ProjectStudent[]
 
   @@map("users")
 }
 
 model Proposal {
-  id             String   @id @default(uuid()) @db.Uuid @map("id")
-  title          String   @db.VarChar(255) @map("title")
-  description    String   @db.Text @map("description")
-  submissionDate DateTime @map("submission_date")
-  status         String   @db.VarChar(100) @map("status")
-  attachments    Bytes    @map("attachments")
-  createdByUserId String  @db.Uuid @map("created_by_user_id")
-  createdBy      User     @relation(fields: [createdByUserId], references: [id])
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id                          String    @id @default(uuid()) @map("id") @db.Uuid
+  title                       String    @map("title") @db.VarChar(255)
+  description                 String    @map("description") @db.Text
+  submissionDate              DateTime  @map("submission_date")
+  status                      String    @map("status") @db.VarChar(100)
+  attachments                 Bytes     @map("attachments")
+  optionalContactPhone        String?   @map("telefone_contato_opcional") @db.VarChar(15)
+  optionalContactPhoneIsWhats Boolean   @default(false) @map("telefone_contato_opcional_is_whats")
+  optionalContactEmail        String?   @map("email_contato_opcional") @db.VarChar(100)
+  createdByUserId             String    @map("created_by_user_id") @db.Uuid
+  createdBy                   User      @relation(fields: [createdByUserId], references: [id])
+  projects                    Project[]
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @updatedAt @map("updated_at")
 
   @@map("proposals")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @map("id") @db.Uuid
+  message   String   @map("message") @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  userId    String   @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Course {
+  id          String    @id @default(uuid()) @map("id") @db.Uuid
+  name        String    @map("name") @db.VarChar(60)
+  description String?   @map("description") @db.Text
+  projects    Project[]
+
+  @@map("courses")
+}
+
+model Project {
+  id                 String           @id @default(uuid()) @map("id") @db.Uuid
+  title              String           @map("title") @db.VarChar(100)
+  description        String           @map("description") @db.Text
+  deadline           DateTime?        @map("deadline")
+  status             String           @map("status") @db.VarChar(50)
+  attachments        String?          @map("attachments") @db.Text
+  courseId           String           @map("course_id") @db.Uuid
+  proposalId         String           @map("proposal_id") @db.Uuid
+  selectedFeedbackId String?          @map("selected_feedback_id") @db.Uuid
+  course             Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  proposal           Proposal         @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  selectedFeedback   Feedback?        @relation("SelectedProjectFeedback", fields: [selectedFeedbackId], references: [id], onDelete: SetNull)
+  feedbacks          Feedback[]       @relation("ProjectFeedbacks")
+  students           ProjectStudent[]
+
+  @@map("projects")
+}
+
+model Feedback {
+  id                 String    @id @default(uuid()) @map("id") @db.Uuid
+  comment            String?   @map("comment") @db.Text
+  attachments        String?   @map("attachments") @db.Text
+  createdAt          DateTime  @default(now()) @map("created_at")
+  userId             String    @map("user_id") @db.Uuid
+  projectId          String    @map("project_id") @db.Uuid
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project            Project   @relation("ProjectFeedbacks", fields: [projectId], references: [id], onDelete: Cascade)
+  selectedByProjects Project[] @relation("SelectedProjectFeedback")
+
+  @@map("feedbacks")
+}
+
+model ProjectStudent {
+  id        String  @id @default(uuid()) @map("id") @db.Uuid
+  projectId String  @map("project_id") @db.Uuid
+  userId    String  @map("user_id") @db.Uuid
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_students")
 }

@@ -15,6 +15,8 @@ export class InMemoryUserRepository implements UserRepository {
       passwordHash: data.passwordHash,
       name: data.name,
       avatar: data.avatar,
+      phone: data.phone,
+      phoneIsWhats: data.phoneIsWhats ?? false,
       role: data.role ?? UserRole.SOCIETY,
     };
 

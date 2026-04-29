@@ -143,6 +143,9 @@ describe("ProposalController", () => {
       submissionDate: now,
       status: "SUBMITTED",
       attachments,
+      optionalContactPhone: "11999999999",
+      optionalContactPhoneIsWhats: true,
+      optionalContactEmail: "proposal-contact@example.com",
       user: {
         id: faker.string.uuid(),
         email: faker.internet.email(),
@@ -160,6 +163,9 @@ describe("ProposalController", () => {
         status: "SUBMITTED",
         attachments: attachments.toString("base64"),
         createdByUserId: faker.string.uuid(),
+        optionalContactPhone: "11999999999",
+        optionalContactPhoneIsWhats: true,
+        optionalContactEmail: "proposal-contact@example.com",
       },
     } as Request;
 
@@ -178,6 +184,9 @@ describe("ProposalController", () => {
         status: req.body.status,
         attachments,
         createdByUserId: req.body.createdByUserId,
+        optionalContactPhone: "11999999999",
+        optionalContactPhoneIsWhats: true,
+        optionalContactEmail: "proposal-contact@example.com",
       }),
     );
     expect(res.json).toHaveBeenCalledWith(
@@ -185,6 +194,9 @@ describe("ProposalController", () => {
         id: expect.any(String),
         submissionDate: now,
         attachments: attachments.toString("base64"),
+        optionalContactPhone: "11999999999",
+        optionalContactPhoneIsWhats: true,
+        optionalContactEmail: "proposal-contact@example.com",
         user: expect.objectContaining({
           id: expect.any(String),
           email: expect.any(String),
@@ -205,6 +217,7 @@ describe("ProposalController", () => {
       submissionDate: now,
       status: "SUBMITTED",
       attachments,
+      optionalContactPhoneIsWhats: false,
       user: {
         id: faker.string.uuid(),
         email: faker.internet.email(),
@@ -285,6 +298,9 @@ describe("ProposalController", () => {
           submissionDate: firstSubmissionDate,
           status: "SUBMITTED",
           attachments: firstAttachments,
+          optionalContactPhone: "11888888888",
+          optionalContactPhoneIsWhats: false,
+          optionalContactEmail: undefined,
           user: {
             id: faker.string.uuid(),
             email: faker.internet.email(),
@@ -300,6 +316,9 @@ describe("ProposalController", () => {
           submissionDate: secondSubmissionDate,
           status: "APPROVED",
           attachments: secondAttachments,
+          optionalContactPhone: undefined,
+          optionalContactPhoneIsWhats: true,
+          optionalContactEmail: "second-contact@example.com",
           user: {
             id: faker.string.uuid(),
             email: faker.internet.email(),
@@ -332,10 +351,16 @@ describe("ProposalController", () => {
       items: expect.arrayContaining([
         expect.objectContaining({
           attachments: firstAttachments.toString("base64"),
+          optionalContactPhone: "11888888888",
+          optionalContactPhoneIsWhats: false,
+          optionalContactEmail: undefined,
           user: expect.objectContaining({ role: UserRole.SOCIETY }),
         }),
         expect.objectContaining({
           attachments: secondAttachments.toString("base64"),
+          optionalContactPhone: undefined,
+          optionalContactPhoneIsWhats: true,
+          optionalContactEmail: "second-contact@example.com",
           user: expect.objectContaining({ role: UserRole.STUDENT }),
         }),
       ]),

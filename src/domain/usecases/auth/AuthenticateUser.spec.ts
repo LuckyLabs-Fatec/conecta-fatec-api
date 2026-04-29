@@ -29,6 +29,8 @@ const setupUser = async (repo: InMemoryUserRepository) => {
         id,
         email,
         passwordHash,
+        phone: "11999999999",
+        phoneIsWhats: false,
         role: UserRole.SOCIETY,
     });
 

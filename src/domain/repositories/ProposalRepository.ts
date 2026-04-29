@@ -7,6 +7,9 @@ export type CreateProposalParams = {
   status: string;
   attachments: Buffer;
   createdByUserId: string;
+  optionalContactPhone?: string;
+  optionalContactPhoneIsWhats?: boolean;
+  optionalContactEmail?: string;
 };
 
 export type ListProposalsParams = {

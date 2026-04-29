@@ -117,13 +117,15 @@ describe("AuthController", () => {
 
         const controller = new AuthController(authenticateUserMock, createUserMock);
 
-        const req = {
-            body: {
-                email: faker.internet.email(),
-                password: faker.internet.password(),
-                name: faker.person.fullName(),
-                avatar: faker.image.avatar(),
-            }
+	    const req = {
+	        body: {
+	            email: faker.internet.email(),
+	            password: faker.internet.password(),
+	            phone: "11999999999",
+	            phoneIsWhats: true,
+	            name: faker.person.fullName(),
+	            avatar: faker.image.avatar(),
+	        }
         } as Request;
 
         const res = {

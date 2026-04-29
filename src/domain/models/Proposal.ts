@@ -15,5 +15,8 @@ export interface Proposal {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  optionalContactPhone?: string;
+  optionalContactPhoneIsWhats: boolean;
+  optionalContactEmail?: string;
   user: ProposalUser;
 }

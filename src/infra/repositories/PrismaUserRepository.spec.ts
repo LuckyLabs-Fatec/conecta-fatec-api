@@ -13,6 +13,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: "New User",
       avatar: "https://cdn.example.com/avatar-new.png",
+      phone: "11999999999",
+      phoneIsWhats: true,
       role: "SOCIETY",
     });
 
@@ -27,6 +29,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: "New User",
       avatar: "https://cdn.example.com/avatar-new.png",
+      phone: "11999999999",
+      phoneIsWhats: true,
     });
 
     expect(create).toHaveBeenCalledWith({
@@ -35,6 +39,8 @@ describe("PrismaUserRepository", () => {
         passwordHash: "hashed-password",
         name: "New User",
         avatar: "https://cdn.example.com/avatar-new.png",
+        phone: "11999999999",
+        phoneIsWhats: true,
         role: "SOCIETY",
       },
     });
@@ -44,6 +50,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: "New User",
       avatar: "https://cdn.example.com/avatar-new.png",
+      phone: "11999999999",
+      phoneIsWhats: true,
       role: "SOCIETY",
     });
   });
@@ -71,6 +79,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: "Mediator User",
       avatar: "https://cdn.example.com/avatar-mediator.png",
+      phone: "11666666666",
+      phoneIsWhats: false,
       role: "MEDIATOR",
     });
 
@@ -85,6 +95,7 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: "Mediator User",
       avatar: "https://cdn.example.com/avatar-mediator.png",
+      phone: "11666666666",
       role: UserRole.MEDIATOR,
     });
 
@@ -94,6 +105,8 @@ describe("PrismaUserRepository", () => {
         passwordHash: "hashed-password",
         name: "Mediator User",
         avatar: "https://cdn.example.com/avatar-mediator.png",
+        phone: "11666666666",
+        phoneIsWhats: false,
         role: "MEDIATOR",
       },
     });
@@ -107,6 +120,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: "Test User",
       avatar: "https://cdn.example.com/avatar-test.png",
+      phone: "11888888888",
+      phoneIsWhats: false,
       role: "SOCIETY",
     });
 
@@ -124,6 +139,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: "Test User",
       avatar: "https://cdn.example.com/avatar-test.png",
+      phone: "11888888888",
+      phoneIsWhats: false,
       role: "SOCIETY",
     });
   });
@@ -135,6 +152,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: null,
       avatar: null,
+      phone: "11777777777",
+      phoneIsWhats: false,
       role: "SOCIETY",
     });
 
@@ -147,6 +166,7 @@ describe("PrismaUserRepository", () => {
     const user = await sut.create({
       email: "no-name@example.com",
       passwordHash: "hashed-password",
+      phone: "11777777777",
     });
 
     expect(create).toHaveBeenCalledWith({
@@ -155,6 +175,8 @@ describe("PrismaUserRepository", () => {
         passwordHash: "hashed-password",
         name: undefined,
         avatar: undefined,
+        phone: "11777777777",
+        phoneIsWhats: false,
         role: "SOCIETY",
       },
     });
@@ -164,6 +186,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: undefined,
       avatar: undefined,
+      phone: "11777777777",
+      phoneIsWhats: false,
       role: "SOCIETY",
     });
   });
@@ -175,6 +199,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: null,
       avatar: null,
+      phone: "11555555555",
+      phoneIsWhats: false,
       role: "SOCIETY",
     });
 
@@ -192,6 +218,8 @@ describe("PrismaUserRepository", () => {
       passwordHash: "hashed-password",
       name: undefined,
       avatar: undefined,
+      phone: "11555555555",
+      phoneIsWhats: false,
       role: "SOCIETY",
     });
   });

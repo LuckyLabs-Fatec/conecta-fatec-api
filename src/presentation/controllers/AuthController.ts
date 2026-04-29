@@ -11,6 +11,8 @@ export type CreateUserResponse = {
   email: string;
   name?: string;
   avatar?: string;
+  phone: string;
+  phoneIsWhats: boolean;
 };
 
 export type CreateUserRequest = {
@@ -18,6 +20,8 @@ export type CreateUserRequest = {
   password: string;
   name?: string;
   avatar?: string;
+  phone: string;
+  phoneIsWhats?: boolean;
 };
 
 export type AuthenticateUserContract = {
@@ -53,10 +57,10 @@ export class AuthController {
       return;
     }
 
-    const { email, password, name, avatar } = req.body;
+    const { email, password, name, avatar, phone, phoneIsWhats } = req.body;
 
     try {
-      const result = await this.createUser.execute({ email, password, name, avatar });
+      const result = await this.createUser.execute({ email, password, name, avatar, phone, phoneIsWhats });
       res.status(201).json(result);
     } catch (error: unknown) {
       const statusCode = HttpErrorMapper.getStatusCode(error);

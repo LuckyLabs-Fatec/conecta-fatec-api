@@ -19,6 +19,9 @@ export type ProposalResponse = {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  optionalContactPhone?: string;
+  optionalContactPhoneIsWhats: boolean;
+  optionalContactEmail?: string;
   user: ProposalAuthorResponse;
 };
 
@@ -29,6 +32,9 @@ export type CreateProposalRequest = {
   status: string;
   attachments: Buffer;
   createdByUserId: string;
+  optionalContactPhone?: string;
+  optionalContactPhoneIsWhats?: boolean;
+  optionalContactEmail?: string;
 };
 
 export type CreateProposalContract = {
@@ -65,7 +71,17 @@ export class ProposalController {
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
-    const { title, description, submissionDate, status, attachments, createdByUserId } = req.body ?? {};
+    const {
+      title,
+      description,
+      submissionDate,
+      status,
+      attachments,
+      createdByUserId,
+      optionalContactPhone,
+      optionalContactPhoneIsWhats,
+      optionalContactEmail,
+    } = req.body ?? {};
 
     try {
       this.validateRequiredFields({
@@ -92,6 +108,9 @@ export class ProposalController {
         status,
         attachments: normalizedAttachments,
         createdByUserId,
+        optionalContactPhone,
+        optionalContactPhoneIsWhats,
+        optionalContactEmail,
       });
 
       res.status(201).json(this.serializeProposal(proposal));
@@ -188,6 +207,9 @@ export class ProposalController {
       submissionDate: proposal.submissionDate,
       status: proposal.status,
       attachments: proposal.attachments.toString("base64"),
+      optionalContactPhone: proposal.optionalContactPhone,
+      optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
+      optionalContactEmail: proposal.optionalContactEmail,
       user: proposal.user,
     };
   }

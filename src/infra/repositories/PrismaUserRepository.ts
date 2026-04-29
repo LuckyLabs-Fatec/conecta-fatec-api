@@ -14,6 +14,8 @@ export class PrismaUserRepository implements UserRepository {
         passwordHash: data.passwordHash,
         name: data.name,
         avatar: data.avatar,
+        phone: data.phone,
+        phoneIsWhats: data.phoneIsWhats ?? false,
         role: (data.role as PrismaUserRole | undefined) ?? PrismaUserRole.SOCIETY,
       },
     });
@@ -24,6 +26,8 @@ export class PrismaUserRepository implements UserRepository {
       passwordHash: createdUser.passwordHash,
       name: createdUser.name ?? undefined,
       avatar: createdUser.avatar ?? undefined,
+      phone: createdUser.phone,
+      phoneIsWhats: createdUser.phoneIsWhats,
       role: createdUser.role as UserRole,
     };
   }
@@ -43,6 +47,8 @@ export class PrismaUserRepository implements UserRepository {
       passwordHash: user.passwordHash,
       name: user.name ?? undefined,
       avatar: user.avatar ?? undefined,
+      phone: user.phone,
+      phoneIsWhats: user.phoneIsWhats,
       role: user.role as UserRole,
     };
   }

@@ -62,6 +62,8 @@ export function makeAuthController(): AuthController {
         passwordHash,
         name: data.name,
         avatar: data.avatar,
+        phone: data.phone,
+        phoneIsWhats: data.phoneIsWhats,
       });
 
       return {
@@ -69,6 +71,8 @@ export function makeAuthController(): AuthController {
         email: createdUser.email,
         name: createdUser.name,
         avatar: createdUser.avatar,
+        phone: createdUser.phone,
+        phoneIsWhats: createdUser.phoneIsWhats,
       };
     },
   });

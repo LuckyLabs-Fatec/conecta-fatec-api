@@ -5,6 +5,8 @@ export type CreateUserParams = {
   passwordHash: string;
   name?: string;
   avatar?: string;
+  phone: string;
+  phoneIsWhats?: boolean;
   role?: UserRole;
 };
 

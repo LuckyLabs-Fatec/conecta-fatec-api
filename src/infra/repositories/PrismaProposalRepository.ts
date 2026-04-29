@@ -17,6 +17,9 @@ type PrismaClientLike = {
         submissionDate: Date;
         status: string;
         attachments: Buffer;
+        optionalContactPhone?: string;
+        optionalContactPhoneIsWhats?: boolean;
+        optionalContactEmail?: string;
         createdBy: {
           connect: {
             id: string;
@@ -56,6 +59,9 @@ type ProposalRecord = {
   submissionDate: Date;
   status: string;
   attachments: Buffer;
+  optionalContactPhone: string | null;
+  optionalContactPhoneIsWhats: boolean;
+  optionalContactEmail: string | null;
   createdBy: UserRecord;
 };
 
@@ -72,6 +78,9 @@ export class PrismaProposalRepository implements ProposalRepository {
         submissionDate: data.submissionDate,
         status: data.status,
         attachments: data.attachments,
+        optionalContactPhone: data.optionalContactPhone,
+        optionalContactPhoneIsWhats: data.optionalContactPhoneIsWhats ?? false,
+        optionalContactEmail: data.optionalContactEmail,
         createdBy: {
           connect: {
             id: data.createdByUserId,
@@ -90,6 +99,9 @@ export class PrismaProposalRepository implements ProposalRepository {
       submissionDate: createdProposal.submissionDate,
       status: createdProposal.status,
       attachments: createdProposal.attachments,
+      optionalContactPhone: createdProposal.optionalContactPhone ?? undefined,
+      optionalContactPhoneIsWhats: createdProposal.optionalContactPhoneIsWhats,
+      optionalContactEmail: createdProposal.optionalContactEmail ?? undefined,
       user: {
         id: createdProposal.createdBy.id,
         email: createdProposal.createdBy.email,
@@ -127,6 +139,9 @@ export class PrismaProposalRepository implements ProposalRepository {
         submissionDate: proposal.submissionDate,
         status: proposal.status,
         attachments: proposal.attachments,
+        optionalContactPhone: proposal.optionalContactPhone ?? undefined,
+        optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
+        optionalContactEmail: proposal.optionalContactEmail ?? undefined,
         user: {
           id: proposal.createdBy.id,
           email: proposal.createdBy.email,

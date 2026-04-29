@@ -18,6 +18,9 @@ export function makeProposalController(): ProposalController {
           status: data.status,
           attachments: data.attachments,
           createdByUserId: data.createdByUserId,
+          optionalContactPhone: data.optionalContactPhone,
+          optionalContactPhoneIsWhats: data.optionalContactPhoneIsWhats,
+          optionalContactEmail: data.optionalContactEmail,
         });
 
         return {
@@ -27,6 +30,9 @@ export function makeProposalController(): ProposalController {
           submissionDate: createdProposal.submissionDate,
           status: createdProposal.status,
           attachments: createdProposal.attachments,
+          optionalContactPhone: createdProposal.optionalContactPhone,
+          optionalContactPhoneIsWhats: createdProposal.optionalContactPhoneIsWhats,
+          optionalContactEmail: createdProposal.optionalContactEmail,
           user: createdProposal.user,
         };
       },

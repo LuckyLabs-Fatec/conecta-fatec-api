@@ -19,6 +19,8 @@ const users = [
     password: "society123",
     name: "Representante da Sociedade",
     avatar: "https://cdn.conecta-fatec.com/avatars/society.png",
+    phone: "11999999999",
+    phoneIsWhats: true,
     role: "SOCIETY",
   },
   {
@@ -27,6 +29,8 @@ const users = [
     password: "mediator123",
     name: "Pessoa Mediadora",
     avatar: "https://cdn.conecta-fatec.com/avatars/mediator.png",
+    phone: "11888888888",
+    phoneIsWhats: false,
     role: "MEDIATOR",
   },
   {
@@ -35,6 +39,8 @@ const users = [
     password: "student123",
     name: "Estudante Exemplo",
     avatar: null,
+    phone: "11777777777",
+    phoneIsWhats: true,
     role: "STUDENT",
   },
 ];
@@ -47,6 +53,9 @@ const proposals = [
     submissionDate: new Date("2026-04-20T10:00:00.000Z"),
     status: "SUBMITTED",
     attachments: Buffer.from("plano-de-mobilidade-v1", "utf-8"),
+    optionalContactPhone: "11999990001",
+    optionalContactPhoneIsWhats: true,
+    optionalContactEmail: "mobilidade@example.com",
     createdByUserId: "d1111111-1111-4111-8111-111111111111",
   },
   {
@@ -56,6 +65,9 @@ const proposals = [
     submissionDate: new Date("2026-04-22T14:30:00.000Z"),
     status: "IN_REVIEW",
     attachments: Buffer.from("anexos-programa-reciclagem", "utf-8"),
+    optionalContactPhone: "11999990002",
+    optionalContactPhoneIsWhats: false,
+    optionalContactEmail: "reciclagem@example.com",
     createdByUserId: "d2222222-2222-4222-8222-222222222222",
   },
   {
@@ -65,6 +77,9 @@ const proposals = [
     submissionDate: new Date("2026-04-24T09:15:00.000Z"),
     status: "APPROVED",
     attachments: Buffer.from("material-inclusao-digital", "utf-8"),
+    optionalContactPhone: null,
+    optionalContactPhoneIsWhats: false,
+    optionalContactEmail: "inclusao@example.com",
     createdByUserId: "d1111111-1111-4111-8111-111111111111",
   },
   {
@@ -74,6 +89,9 @@ const proposals = [
     submissionDate: new Date("2026-04-25T13:40:00.000Z"),
     status: "SUBMITTED",
     attachments: Buffer.from("projeto-horta-comunitaria", "utf-8"),
+    optionalContactPhone: "11999990004",
+    optionalContactPhoneIsWhats: true,
+    optionalContactEmail: null,
     createdByUserId: "d3333333-3333-4333-8333-333333333333",
   },
   {
@@ -83,6 +101,9 @@ const proposals = [
     submissionDate: new Date("2026-04-26T08:20:00.000Z"),
     status: "IN_REVIEW",
     attachments: Buffer.from("roteiro-apoio-psicologico", "utf-8"),
+    optionalContactPhone: null,
+    optionalContactPhoneIsWhats: false,
+    optionalContactEmail: "apoio@example.com",
     createdByUserId: "d2222222-2222-4222-8222-222222222222",
   },
   {
@@ -92,6 +113,9 @@ const proposals = [
     submissionDate: new Date("2026-04-27T16:10:00.000Z"),
     status: "APPROVED",
     attachments: Buffer.from("laboratorio-aberto-inovacao", "utf-8"),
+    optionalContactPhone: "11999990006",
+    optionalContactPhoneIsWhats: true,
+    optionalContactEmail: "inovacao@example.com",
     createdByUserId: "d1111111-1111-4111-8111-111111111111",
   },
   {
@@ -101,7 +125,91 @@ const proposals = [
     submissionDate: new Date("2026-04-28T11:05:00.000Z"),
     status: "REJECTED",
     attachments: Buffer.from("campanha-economia-energia", "utf-8"),
+    optionalContactPhone: "11999990007",
+    optionalContactPhoneIsWhats: false,
+    optionalContactEmail: null,
     createdByUserId: "d3333333-3333-4333-8333-333333333333",
+  },
+];
+
+const courses = [
+  {
+    id: "e1111111-1111-4111-8111-111111111111",
+    name: "Systems Analysis",
+    description: "Technology projects connected to community needs.",
+  },
+  {
+    id: "e2222222-2222-4222-8222-222222222222",
+    name: "Business Management",
+    description: "Operational and social impact projects.",
+  },
+];
+
+const projects = [
+  {
+    id: "f1111111-1111-4111-8111-111111111111",
+    title: "Campus Mobility Platform",
+    description: "Build a prototype to organize campus mobility requests.",
+    deadline: new Date("2026-06-30T00:00:00.000Z"),
+    status: "ACTIVE",
+    attachments: "mobility-project-brief",
+    courseId: "e1111111-1111-4111-8111-111111111111",
+    proposalId: "1f4d3c20-7f52-4c1f-b9ef-93cd5b8db001",
+    selectedFeedbackId: "a1111111-1111-4111-8111-111111111111",
+  },
+  {
+    id: "f2222222-2222-4222-8222-222222222222",
+    title: "Community Recycling Workflow",
+    description: "Define a recycling workflow with partner cooperatives.",
+    deadline: new Date("2026-07-15T00:00:00.000Z"),
+    status: "PLANNING",
+    attachments: "recycling-project-brief",
+    courseId: "e2222222-2222-4222-8222-222222222222",
+    proposalId: "4ac2a8f0-6e35-4c6b-8a44-c1e8a954b002",
+    selectedFeedbackId: "a2222222-2222-4222-8222-222222222222",
+  },
+];
+
+const feedbacks = [
+  {
+    id: "a1111111-1111-4111-8111-111111111111",
+    comment: "Prioritize accessible routes and peak class hours.",
+    attachments: "mobility-feedback-notes",
+    userId: "d2222222-2222-4222-8222-222222222222",
+    projectId: "f1111111-1111-4111-8111-111111111111",
+  },
+  {
+    id: "a2222222-2222-4222-8222-222222222222",
+    comment: "Map collection points before implementation.",
+    attachments: "recycling-feedback-notes",
+    userId: "d1111111-1111-4111-8111-111111111111",
+    projectId: "f2222222-2222-4222-8222-222222222222",
+  },
+];
+
+const projectStudents = [
+  {
+    id: "b1111111-1111-4111-8111-111111111111",
+    projectId: "f1111111-1111-4111-8111-111111111111",
+    userId: "d3333333-3333-4333-8333-333333333333",
+  },
+  {
+    id: "b2222222-2222-4222-8222-222222222222",
+    projectId: "f2222222-2222-4222-8222-222222222222",
+    userId: "d3333333-3333-4333-8333-333333333333",
+  },
+];
+
+const notifications = [
+  {
+    id: "c1111111-1111-4111-8111-111111111111",
+    message: "Your proposal was received.",
+    userId: "d1111111-1111-4111-8111-111111111111",
+  },
+  {
+    id: "c2222222-2222-4222-8222-222222222222",
+    message: "A project received new feedback.",
+    userId: "d3333333-3333-4333-8333-333333333333",
   },
 ];
 
@@ -114,6 +222,8 @@ async function main() {
       update: {
         name: user.name,
         avatar: user.avatar,
+        phone: user.phone,
+        phoneIsWhats: user.phoneIsWhats,
         passwordHash,
         role: user.role,
       },
@@ -122,6 +232,8 @@ async function main() {
         email: user.email,
         name: user.name,
         avatar: user.avatar,
+        phone: user.phone,
+        phoneIsWhats: user.phoneIsWhats,
         passwordHash,
         role: user.role,
       },
@@ -137,6 +249,9 @@ async function main() {
         submissionDate: proposal.submissionDate,
         status: proposal.status,
         attachments: proposal.attachments,
+        optionalContactPhone: proposal.optionalContactPhone,
+        optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
+        optionalContactEmail: proposal.optionalContactEmail,
         createdBy: {
           connect: {
             id: proposal.createdByUserId,
@@ -150,6 +265,9 @@ async function main() {
         submissionDate: proposal.submissionDate,
         status: proposal.status,
         attachments: proposal.attachments,
+        optionalContactPhone: proposal.optionalContactPhone,
+        optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
+        optionalContactEmail: proposal.optionalContactEmail,
         createdBy: {
           connect: {
             id: proposal.createdByUserId,
@@ -159,7 +277,108 @@ async function main() {
     });
   }
 
-  console.log(`Seed concluído: ${users.length} usuários e ${proposals.length} propostas inseridos/atualizados.`);
+  for (const course of courses) {
+    await prisma.course.upsert({
+      where: { id: course.id },
+      update: {
+        name: course.name,
+        description: course.description,
+      },
+      create: course,
+    });
+  }
+
+  for (const project of projects) {
+    await prisma.project.upsert({
+      where: { id: project.id },
+      update: {
+        title: project.title,
+        description: project.description,
+        deadline: project.deadline,
+        status: project.status,
+        attachments: project.attachments,
+        course: { connect: { id: project.courseId } },
+        proposal: { connect: { id: project.proposalId } },
+      },
+      create: {
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        deadline: project.deadline,
+        status: project.status,
+        attachments: project.attachments,
+        course: { connect: { id: project.courseId } },
+        proposal: { connect: { id: project.proposalId } },
+      },
+    });
+  }
+
+  for (const feedback of feedbacks) {
+    await prisma.feedback.upsert({
+      where: { id: feedback.id },
+      update: {
+        comment: feedback.comment,
+        attachments: feedback.attachments,
+        user: { connect: { id: feedback.userId } },
+        project: { connect: { id: feedback.projectId } },
+      },
+      create: {
+        id: feedback.id,
+        comment: feedback.comment,
+        attachments: feedback.attachments,
+        user: { connect: { id: feedback.userId } },
+        project: { connect: { id: feedback.projectId } },
+      },
+    });
+  }
+
+  for (const project of projects) {
+    await prisma.project.update({
+      where: { id: project.id },
+      data: {
+        selectedFeedback: { connect: { id: project.selectedFeedbackId } },
+      },
+    });
+  }
+
+  for (const projectStudent of projectStudents) {
+    await prisma.projectStudent.upsert({
+      where: {
+        projectId_userId: {
+          projectId: projectStudent.projectId,
+          userId: projectStudent.userId,
+        },
+      },
+      update: {
+        project: { connect: { id: projectStudent.projectId } },
+        user: { connect: { id: projectStudent.userId } },
+      },
+      create: {
+        id: projectStudent.id,
+        project: { connect: { id: projectStudent.projectId } },
+        user: { connect: { id: projectStudent.userId } },
+      },
+    });
+  }
+
+  for (const notification of notifications) {
+    await prisma.notification.upsert({
+      where: { id: notification.id },
+      update: {
+        message: notification.message,
+        user: { connect: { id: notification.userId } },
+      },
+      create: {
+        id: notification.id,
+        message: notification.message,
+        user: { connect: { id: notification.userId } },
+      },
+    });
+  }
+
+  console.log(
+    `Seed completed: ${users.length} users, ${proposals.length} proposals, ${courses.length} courses, ${projects.length} projects, ${feedbacks.length} feedbacks, ${projectStudents.length} project students, and ${notifications.length} notifications inserted/updated.`,
+  );
 }
 
 main()

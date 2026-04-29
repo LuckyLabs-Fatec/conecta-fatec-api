@@ -12,14 +12,14 @@ PORT=8080
 
 2. Instale as dependências
 ```
-npm install 
+pnpm install 
 ```
 ## Execução
 
 Para iniciar o servidor, utilize o comando:
 
 ```
-npm run dev
+pnpm run dev
 ```
 O servidor estará rodando em `http://localhost:8080`.
 

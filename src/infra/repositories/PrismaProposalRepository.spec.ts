@@ -23,6 +23,9 @@ describe("PrismaProposalRepository", () => {
       submissionDate,
       status: "SUBMITTED",
       attachments,
+      optionalContactPhone: "11999999999",
+      optionalContactPhoneIsWhats: true,
+      optionalContactEmail: "proposal-contact@example.com",
       createdBy,
     });
 
@@ -37,6 +40,9 @@ describe("PrismaProposalRepository", () => {
       status: "SUBMITTED",
       attachments,
       createdByUserId: "society-user-id",
+      optionalContactPhone: "11999999999",
+      optionalContactPhoneIsWhats: true,
+      optionalContactEmail: "proposal-contact@example.com",
     });
 
     expect(create).toHaveBeenCalledWith({
@@ -46,6 +52,9 @@ describe("PrismaProposalRepository", () => {
         submissionDate,
         status: "SUBMITTED",
         attachments,
+        optionalContactPhone: "11999999999",
+        optionalContactPhoneIsWhats: true,
+        optionalContactEmail: "proposal-contact@example.com",
         createdBy: {
           connect: {
             id: "society-user-id",
@@ -64,6 +73,9 @@ describe("PrismaProposalRepository", () => {
       submissionDate,
       status: "SUBMITTED",
       attachments,
+      optionalContactPhone: "11999999999",
+      optionalContactPhoneIsWhats: true,
+      optionalContactEmail: "proposal-contact@example.com",
       user: createdBy,
     });
   });
@@ -80,6 +92,9 @@ describe("PrismaProposalRepository", () => {
         submissionDate: firstSubmissionDate,
         status: "SUBMITTED",
         attachments: Buffer.from("first-file"),
+        optionalContactPhone: "11888888888",
+        optionalContactPhoneIsWhats: false,
+        optionalContactEmail: null,
         createdBy: {
           id: "society-user-id",
           email: "society@example.com",
@@ -95,6 +110,9 @@ describe("PrismaProposalRepository", () => {
         submissionDate: secondSubmissionDate,
         status: "APPROVED",
         attachments: Buffer.from("second-file"),
+        optionalContactPhone: null,
+        optionalContactPhoneIsWhats: true,
+        optionalContactEmail: "second-contact@example.com",
         createdBy: {
           id: "student-user-id",
           email: "student@example.com",
@@ -120,6 +138,9 @@ describe("PrismaProposalRepository", () => {
           submissionDate: firstSubmissionDate,
           status: "SUBMITTED",
           attachments: Buffer.from("first-file"),
+          optionalContactPhone: "11888888888",
+          optionalContactPhoneIsWhats: false,
+          optionalContactEmail: undefined,
           user: {
             id: "society-user-id",
             email: "society@example.com",
@@ -135,6 +156,9 @@ describe("PrismaProposalRepository", () => {
           submissionDate: secondSubmissionDate,
           status: "APPROVED",
           attachments: Buffer.from("second-file"),
+          optionalContactPhone: undefined,
+          optionalContactPhoneIsWhats: true,
+          optionalContactEmail: "second-contact@example.com",
           user: {
             id: "student-user-id",
             email: "student@example.com",
@@ -172,6 +196,9 @@ describe("PrismaProposalRepository", () => {
       submissionDate,
       status: "SUBMITTED",
       attachments,
+      optionalContactPhone: null,
+      optionalContactPhoneIsWhats: false,
+      optionalContactEmail: null,
       createdBy: {
         id: "society-user-id",
         email: "society@example.com",
@@ -193,6 +220,10 @@ describe("PrismaProposalRepository", () => {
       attachments,
       createdByUserId: "society-user-id",
     });
+
+    expect(proposal.optionalContactPhone).toBeUndefined();
+    expect(proposal.optionalContactPhoneIsWhats).toBe(false);
+    expect(proposal.optionalContactEmail).toBeUndefined();
 
     expect(proposal.user).toEqual({
       id: "society-user-id",
