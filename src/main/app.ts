@@ -8,13 +8,19 @@ import { routes } from "@/main/router/index.routes";
 
 const app = express();
 
-const parsedOrigins = process.env.CORS_ORIGIN?.split(",")
-	.map((origin) => origin.trim())
-	.filter(Boolean);
+const allowedOrigins = process.env.CORS_ORIGIN?.split(",").map((origin) => origin.trim()) ?? [];
 
 const corsOptions: cors.CorsOptions = {
-	origin: parsedOrigins && parsedOrigins.length > 0 ? parsedOrigins : true,
+	origin: (origin, callback) => {
+		if (!origin || allowedOrigins.includes(origin)) {
+			callback(null, true);
+		} else {
+			callback(new Error("Not allowed by CORS"));
+		}
+	},
 	credentials: true,
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+	allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
