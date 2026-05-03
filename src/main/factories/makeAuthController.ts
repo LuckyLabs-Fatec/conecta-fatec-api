@@ -44,7 +44,7 @@ export function makeAuthController(): AuthController {
         }
       );
 
-      return { accessToken };
+      return { accessToken, role: user.role };
 
     },
   }, {

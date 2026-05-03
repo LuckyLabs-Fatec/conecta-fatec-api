@@ -5,6 +5,7 @@ import { faker } from "@faker-js/faker";
 import { AuthController, AuthenticateUserContract } from "./AuthController";
 
 import { InvalidCredentialsError } from "@/domain/errors/InvalidCredentialsError";
+import { UserRole } from "@/domain/models/User";
 
 
 
@@ -64,7 +65,10 @@ describe("AuthController", () => {
 
     it("should return 200 and access token on successful authentication", async () => {
         const fakeToken = faker.string.uuid();
-        vi.mocked(authenticateUserMock.execute).mockResolvedValue({ accessToken: fakeToken });
+        vi.mocked(authenticateUserMock.execute).mockResolvedValue({
+            accessToken: fakeToken,
+            role: UserRole.SOCIETY,
+        });
 
         const req = {
             body: {
@@ -81,7 +85,10 @@ describe("AuthController", () => {
         await authController.login(req, res);
 
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ accessToken: fakeToken });
+        expect(res.json).toHaveBeenCalledWith({
+            accessToken: fakeToken,
+            role: UserRole.SOCIETY,
+        });
     });
 
     it("should return 501 when register is not implemented", async () => {

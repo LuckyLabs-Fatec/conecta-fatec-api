@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 
+import { UserRole } from "@/domain/models/User";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
 export type AuthenticateUserResponse = {
   accessToken: string;
+  role: UserRole;
 };
 
 export type CreateUserResponse = {
@@ -43,7 +45,7 @@ export class AuthController {
 
     try {
       const result = await this.authenticateUser.execute(email, password);
-      res.status(200).json({ accessToken: result.accessToken });
+      res.status(200).json(result);
     } catch (error: unknown) {
       const statusCode = HttpErrorMapper.getStatusCode(error);
       const message = HttpErrorMapper.getMessage(error);

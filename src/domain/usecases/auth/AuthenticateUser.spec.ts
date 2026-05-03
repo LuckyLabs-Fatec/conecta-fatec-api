@@ -51,6 +51,7 @@ describe("AuthenticateUser", () => {
     
         const user = await sut.execute(email, passwordHash);
         expect(user.email).toBe(email);
+        expect(user.role).toBe(UserRole.SOCIETY);
     });
 
     it("should throw when password does not match", async () => {
@@ -70,5 +71,6 @@ describe("AuthenticateUser", () => {
     
         const user = await useCase.execute(email, passwordHash);
         expect(user.email).toBe(email);
+        expect(user.role).toBe(UserRole.SOCIETY);
     });
 });
