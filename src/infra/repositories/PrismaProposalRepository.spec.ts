@@ -253,4 +253,83 @@ describe("PrismaProposalRepository", () => {
       totalPages: 1,
     });
   });
+
+  it("should find paginated proposals by user and return mapped data", async () => {
+    const submissionDate = new Date("2026-04-26T12:00:00.000Z");
+
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        id: "proposal-1",
+        title: "First Proposal",
+        description: "First description",
+        submissionDate,
+        status: "SUBMITTED",
+        attachments: Buffer.from("first-file"),
+        optionalContactPhone: null,
+        optionalContactPhoneIsWhats: false,
+        optionalContactEmail: null,
+        createdBy: {
+          id: "society-user-id",
+          email: "society@example.com",
+          name: "Society User",
+          avatar: null,
+          role: UserRole.SOCIETY,
+        },
+      },
+    ]);
+
+    const count = vi.fn().mockResolvedValue(1);
+
+    const sut = new PrismaProposalRepository({
+      proposal: { create: vi.fn(), findMany, count },
+    });
+
+    const paginated = await sut.findPaginatedByUser({ page: 3, limit: 5, userId: "society-user-id" });
+
+    expect(paginated).toEqual({
+      items: [
+        {
+          id: "proposal-1",
+          title: "First Proposal",
+          description: "First description",
+          submissionDate,
+          status: "SUBMITTED",
+          attachments: Buffer.from("first-file"),
+          optionalContactPhone: undefined,
+          optionalContactPhoneIsWhats: false,
+          optionalContactEmail: undefined,
+          user: {
+            id: "society-user-id",
+            email: "society@example.com",
+            name: "Society User",
+            avatar: undefined,
+            role: UserRole.SOCIETY,
+          },
+        },
+      ],
+      page: 3,
+      limit: 5,
+      totalItems: 1,
+      totalPages: 1,
+    });
+
+    expect(count).toHaveBeenCalledWith({
+      where: {
+        createdByUserId: "society-user-id",
+      },
+    });
+    expect(findMany).toHaveBeenCalledWith({
+      skip: 10,
+      take: 5,
+      orderBy: {
+        submissionDate: "desc",
+      },
+      where: {
+        createdByUserId: "society-user-id",
+      },
+      include: {
+        createdBy: true,
+      },
+    });
+  });
 });

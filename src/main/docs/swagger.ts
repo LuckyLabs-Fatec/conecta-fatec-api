@@ -221,6 +221,38 @@ const swaggerDocument = {
         },
         required: ["title", "description", "submissionDate", "status", "attachments"],
       },
+      ProposalAuthor: {
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            format: "uuid",
+            example: "7b9237cf-d8b9-40f2-9f42-c7eb4a40d54a",
+          },
+          email: {
+            type: "string",
+            format: "email",
+            example: "usuario@email.com",
+          },
+          name: {
+            type: "string",
+            nullable: true,
+            example: "Usuário Exemplo",
+          },
+          avatar: {
+            type: "string",
+            format: "uri",
+            nullable: true,
+            example: "https://cdn.conecta-fatec.com/avatars/usuario-exemplo.png",
+          },
+          role: {
+            type: "string",
+            enum: ["SOCIETY", "MEDIATOR", "STUDENT"],
+            example: "SOCIETY",
+          },
+        },
+        required: ["id", "email", "role"],
+      },
       CreateProposalResponse: {
         type: "object",
         properties: {
@@ -268,6 +300,9 @@ const swaggerDocument = {
             nullable: true,
             example: "proposal-contact@example.com",
           },
+          user: {
+            $ref: "#/components/schemas/ProposalAuthor",
+          },
         },
         required: [
           "id",
@@ -277,6 +312,7 @@ const swaggerDocument = {
           "status",
           "attachments",
           "optionalContactPhoneIsWhats",
+          "user",
         ],
       },
       ProposalListItem: {
@@ -326,6 +362,9 @@ const swaggerDocument = {
             nullable: true,
             example: "proposal-contact@example.com",
           },
+          user: {
+            $ref: "#/components/schemas/ProposalAuthor",
+          },
         },
         required: [
           "id",
@@ -335,17 +374,8 @@ const swaggerDocument = {
           "status",
           "attachments",
           "optionalContactPhoneIsWhats",
+          "user",
         ],
-      },
-      ProposalListMeta: {
-        type: "object",
-        properties: {
-          page: { type: "integer", example: 1 },
-          limit: { type: "integer", example: 10 },
-          totalItems: { type: "integer", example: 42 },
-          totalPages: { type: "integer", example: 5 },
-        },
-        required: ["page", "limit", "totalItems", "totalPages"],
       },
       ProposalListResponse: {
         type: "object",
@@ -356,11 +386,12 @@ const swaggerDocument = {
               $ref: "#/components/schemas/ProposalListItem",
             },
           },
-          meta: {
-            $ref: "#/components/schemas/ProposalListMeta",
-          },
+          page: { type: "integer", example: 1 },
+          limit: { type: "integer", example: 10 },
+          totalItems: { type: "integer", example: 42 },
+          totalPages: { type: "integer", example: 5 },
         },
-        required: ["items", "meta"],
+        required: ["items", "page", "limit", "totalItems", "totalPages"],
       },
       Course: {
         type: "object",

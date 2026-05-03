@@ -64,10 +64,21 @@ export type ListProposalsContract = {
   }>;
 };
 
+export type ListMyProposalsContract = {
+  execute(params: { page: number; limit: number; userId: string }): Promise<{
+    items: ProposalResponse[];
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  }>;
+};
+
 export class ProposalController {
   constructor(
     private readonly createProposal: CreateProposalContract,
     private readonly listProposals: ListProposalsContract,
+    private readonly listMyProposals: ListMyProposalsContract,
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
@@ -125,6 +136,36 @@ export class ProposalController {
     try {
       const { page, limit } = this.parsePaginationQuery(req.query);
       const proposals = await this.listProposals.execute({ page, limit });
+
+      res.status(200).json({
+        items: proposals.items.map((proposal) => this.serializeProposal(proposal)),
+        page: proposals.page,
+        limit: proposals.limit,
+        totalItems: proposals.totalItems,
+        totalPages: proposals.totalPages,
+      });
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
+  async listMine(req: Request, res: Response): Promise<void> {
+    try {
+      const { page, limit } = this.parsePaginationQuery(req.query);
+      const createdByUserId = req.body?.createdByUserId;
+
+      if (!createdByUserId) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
+      const proposals = await this.listMyProposals.execute({
+        page,
+        limit,
+        userId: createdByUserId,
+      });
 
       res.status(200).json({
         items: proposals.items.map((proposal) => this.serializeProposal(proposal)),

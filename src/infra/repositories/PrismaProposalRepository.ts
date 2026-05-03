@@ -3,6 +3,7 @@ import { UserRole } from "@/domain/models/User";
 import {
   CreateProposalParams,
   ListProposalsParams,
+  ListUserProposalsParams,
   PaginatedProposals,
   ProposalRepository,
 } from "@/domain/repositories/ProposalRepository";
@@ -36,11 +37,18 @@ type PrismaClientLike = {
       orderBy?: {
         submissionDate?: "asc" | "desc";
       };
+      where?: {
+        createdByUserId?: string;
+      };
       include?: {
         createdBy?: true;
       };
     }): Promise<ProposalRecord[]>;
-    count(): Promise<number>;
+    count(args?: {
+      where?: {
+        createdByUserId?: string;
+      };
+    }): Promise<number>;
   };
 };
 
@@ -123,6 +131,55 @@ export class PrismaProposalRepository implements ProposalRepository {
         orderBy: {
           submissionDate: "desc",
         },
+        include: {
+          createdBy: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / params.limit));
+
+    return {
+      items: proposals.map((proposal) => ({
+        id: proposal.id,
+        title: proposal.title,
+        description: proposal.description,
+        submissionDate: proposal.submissionDate,
+        status: proposal.status,
+        attachments: proposal.attachments,
+        optionalContactPhone: proposal.optionalContactPhone ?? undefined,
+        optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
+        optionalContactEmail: proposal.optionalContactEmail ?? undefined,
+        user: {
+          id: proposal.createdBy.id,
+          email: proposal.createdBy.email,
+          name: proposal.createdBy.name ?? undefined,
+          avatar: proposal.createdBy.avatar ?? undefined,
+          role: proposal.createdBy.role,
+        },
+      })),
+      page: params.page,
+      limit: params.limit,
+      totalItems,
+      totalPages,
+    };
+  }
+
+  async findPaginatedByUser(params: ListUserProposalsParams): Promise<PaginatedProposals> {
+    const skip = (params.page - 1) * params.limit;
+    const where = {
+      createdByUserId: params.userId,
+    };
+
+    const [totalItems, proposals] = await Promise.all([
+      this.db.proposal.count({ where }),
+      this.db.proposal.findMany({
+        skip,
+        take: params.limit,
+        orderBy: {
+          submissionDate: "desc",
+        },
+        where,
         include: {
           createdBy: true,
         },

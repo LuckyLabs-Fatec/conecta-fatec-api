@@ -2,7 +2,12 @@ import { Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { faker } from "@faker-js/faker";
 
-import { CreateProposalContract, ListProposalsContract, ProposalController } from "./ProposalController";
+import {
+  CreateProposalContract,
+  ListMyProposalsContract,
+  ListProposalsContract,
+  ProposalController,
+} from "./ProposalController";
 
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
 import { UserRole } from "@/domain/models/User";
@@ -11,6 +16,7 @@ describe("ProposalController", () => {
   let proposalController: ProposalController;
   let createProposalMock: CreateProposalContract;
   let listProposalsMock: ListProposalsContract;
+  let listMyProposalsMock: ListMyProposalsContract;
 
   beforeEach(() => {
     createProposalMock = {
@@ -21,7 +27,11 @@ describe("ProposalController", () => {
       execute: vi.fn(),
     };
 
-    proposalController = new ProposalController(createProposalMock, listProposalsMock);
+    listMyProposalsMock = {
+      execute: vi.fn(),
+    };
+
+    proposalController = new ProposalController(createProposalMock, listProposalsMock, listMyProposalsMock);
   });
 
   it("should return 400 when required fields are missing", async () => {
@@ -461,5 +471,91 @@ describe("ProposalController", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ message: "Invalid proposal payload" });
+  });
+
+  it("should return 200 and only the authenticated user's proposals on mine list", async () => {
+    const submissionDate = new Date("2026-04-26T10:00:00.000Z");
+    const attachments = Buffer.from("mine-content");
+
+    vi.mocked(listMyProposalsMock.execute).mockResolvedValue({
+      items: [
+        {
+          id: faker.string.uuid(),
+          title: faker.lorem.words(3),
+          description: faker.lorem.paragraph(),
+          submissionDate,
+          status: "SUBMITTED",
+          attachments,
+          optionalContactPhone: "11999999999",
+          optionalContactPhoneIsWhats: true,
+          optionalContactEmail: "mine-contact@example.com",
+          user: {
+            id: faker.string.uuid(),
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+            avatar: faker.internet.url(),
+            role: UserRole.SOCIETY,
+          },
+        },
+      ],
+      page: 1,
+      limit: 10,
+      totalItems: 1,
+      totalPages: 1,
+    });
+
+    const req = {
+      body: {
+        createdByUserId: faker.string.uuid(),
+      },
+      query: {},
+    } as unknown as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.listMine(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(listMyProposalsMock.execute).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+      userId: req.body.createdByUserId,
+    });
+    expect(res.json).toHaveBeenCalledWith({
+      items: [
+        expect.objectContaining({
+          attachments: attachments.toString("base64"),
+          optionalContactPhone: "11999999999",
+          optionalContactPhoneIsWhats: true,
+          optionalContactEmail: "mine-contact@example.com",
+          user: expect.objectContaining({ role: UserRole.SOCIETY }),
+        }),
+      ],
+      page: 1,
+      limit: 10,
+      totalItems: 1,
+      totalPages: 1,
+    });
+  });
+
+  it("should return 401 when list mine is called without authenticated user id", async () => {
+    const req = {
+      body: {},
+      query: {},
+    } as unknown as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.listMine(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ message: "Authentication required" });
+    expect(listMyProposalsMock.execute).not.toHaveBeenCalled();
   });
 });

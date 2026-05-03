@@ -17,6 +17,10 @@ export type ListProposalsParams = {
   limit: number;
 };
 
+export type ListUserProposalsParams = ListProposalsParams & {
+  userId: string;
+};
+
 export type PaginatedProposals = {
   items: Proposal[];
   page: number;
@@ -28,4 +32,5 @@ export type PaginatedProposals = {
 export interface ProposalRepository {
   create(data: CreateProposalParams): Promise<Proposal>;
   findPaginated(params: ListProposalsParams): Promise<PaginatedProposals>;
+  findPaginatedByUser(params: ListUserProposalsParams): Promise<PaginatedProposals>;
 }

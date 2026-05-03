@@ -48,5 +48,16 @@ export function makeProposalController(): ProposalController {
         return proposalRepository.findPaginated({ page, limit });
       },
     },
+    {
+      async execute({ page, limit, userId }): Promise<{
+        items: ProposalResponse[];
+        page: number;
+        limit: number;
+        totalItems: number;
+        totalPages: number;
+      }> {
+        return proposalRepository.findPaginatedByUser({ page, limit, userId });
+      },
+    },
   );
 }

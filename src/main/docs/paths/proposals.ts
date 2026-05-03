@@ -128,4 +128,86 @@ export const proposalPaths = {
       },
     },
   },
+  "/proposals/mine": {
+    get: {
+      tags: ["Proposals"],
+      summary: "Lista as propostas do usuário autenticado",
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "page",
+          in: "query",
+          required: false,
+          schema: {
+            type: "integer",
+            minimum: 1,
+            example: 1,
+          },
+        },
+        {
+          name: "limit",
+          in: "query",
+          required: false,
+          schema: {
+            type: "integer",
+            minimum: 1,
+            maximum: 100,
+            example: 10,
+          },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Lista de propostas do usuário autenticado",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ProposalListResponse",
+              },
+            },
+          },
+        },
+        400: {
+          description: "Parâmetros de paginação inválidos",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        401: {
+          description: "Usuário não autenticado ou token inválido",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        403: {
+          description: "Usuário autenticado sem permissão de comunidade",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        500: {
+          description: "Erro interno",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 } as const;
