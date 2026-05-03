@@ -1,8 +1,8 @@
 import { InvalidPayloadError } from "@/domain/errors/InvalidPayloadError";
 
 export type PaginationQuery = {
-  page?: unknown;
-  limit?: unknown;
+  page?: number;
+  limit?: number;
 };
 
 export const parsePaginationQuery = (query: PaginationQuery): { page: number; limit: number } => {

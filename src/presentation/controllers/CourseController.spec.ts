@@ -59,4 +59,85 @@ describe("CourseController", () => {
     expect(listCourses.execute).toHaveBeenCalledWith({ page: 1, limit: 10 });
     expect(res.status).toHaveBeenCalledWith(200);
   });
+
+  it("should return 400 when name is missing in create request", async () => {
+    const createCourse = { execute: vi.fn() };
+    const listCourses = { execute: vi.fn() };
+    const controller = new CourseController(createCourse, listCourses);
+    const req = {
+      body: {
+        description: "Technology projects",
+      },
+    } as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await controller.create(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Missing required fields",
+    });
+  });
+
+  it("should return 400 when body is undefined", async () => {
+    const createCourse = { execute: vi.fn() };
+    const listCourses = { execute: vi.fn() };
+    const controller = new CourseController(createCourse, listCourses);
+    const req = {} as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await controller.create(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Missing required fields",
+    });
+  });
+
+  it("should return 500 on unexpected error during create", async () => {
+    const createCourse = {
+      execute: vi.fn().mockRejectedValue(new Error("Database error")),
+    };
+    const listCourses = { execute: vi.fn() };
+    const controller = new CourseController(createCourse, listCourses);
+    const req = {
+      body: {
+        name: "Systems Analysis",
+      },
+    } as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await controller.create(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Database error",
+    });
+  });
+
+  it("should return 500 on unexpected error during list", async () => {
+    const createCourse = { execute: vi.fn() };
+    const listCourses = {
+      execute: vi.fn().mockRejectedValue(new Error("Database error")),
+    };
+    const controller = new CourseController(createCourse, listCourses);
+    const req = { query: {} } as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await controller.list(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+  });
 });
