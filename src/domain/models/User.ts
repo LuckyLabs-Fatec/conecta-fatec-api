@@ -14,3 +14,13 @@ export interface User {
   phoneIsWhats: boolean;
   role: UserRole;
 }
+
+export interface PublicUser {
+  id: string;
+  email: string;
+  name?: string;
+  avatar?: string;
+  phone: string;
+  phoneIsWhats: boolean;
+  role: UserRole;
+}

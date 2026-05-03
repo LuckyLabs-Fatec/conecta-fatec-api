@@ -57,13 +57,52 @@ const swaggerDocument = {
             type: "string",
             example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
           },
+          user: {
+            $ref: "#/components/schemas/PublicUser",
+          },
+        },
+        required: ["accessToken", "user"],
+      },
+      PublicUser: {
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            format: "uuid",
+            example: "7b9237cf-d8b9-40f2-9f42-c7eb4a40d54a",
+          },
+          email: {
+            type: "string",
+            format: "email",
+            example: "usuario@email.com",
+          },
+          name: {
+            type: "string",
+            nullable: true,
+            example: "Usuário Exemplo",
+          },
+          avatar: {
+            type: "string",
+            format: "uri",
+            nullable: true,
+            example: "https://cdn.conecta-fatec.com/avatars/usuario-exemplo.png",
+          },
+          phone: {
+            type: "string",
+            maxLength: 15,
+            example: "11999999999",
+          },
+          phoneIsWhats: {
+            type: "boolean",
+            example: true,
+          },
           role: {
             type: "string",
             enum: ["SOCIETY", "MEDIATOR", "STUDENT"],
             example: "SOCIETY",
           },
         },
-        required: ["accessToken", "role"],
+        required: ["id", "email", "phone", "phoneIsWhats", "role"],
       },
       RegisterRequest: {
         type: "object",

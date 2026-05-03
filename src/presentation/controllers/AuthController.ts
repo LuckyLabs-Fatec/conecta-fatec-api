@@ -1,21 +1,14 @@
 import { Request, Response } from "express";
 
-import { UserRole } from "@/domain/models/User";
+import { PublicUser } from "@/domain/models/User";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
 export type AuthenticateUserResponse = {
   accessToken: string;
-  role: UserRole;
+  user: PublicUser;
 };
 
-export type CreateUserResponse = {
-  id: string;
-  email: string;
-  name?: string;
-  avatar?: string;
-  phone: string;
-  phoneIsWhats: boolean;
-};
+export type CreateUserResponse = Omit<PublicUser, "role">;
 
 export type CreateUserRequest = {
   email: string;

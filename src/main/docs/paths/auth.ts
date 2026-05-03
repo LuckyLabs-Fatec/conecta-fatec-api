@@ -2,7 +2,7 @@ export const authPaths = {
   "/auth/login": {
     post: {
       tags: ["Auth"],
-      summary: "Autentica usuário e retorna token JWT",
+      summary: "Autentica usuário e retorna token JWT e dados públicos",
       requestBody: {
         required: true,
         content: {

@@ -50,8 +50,13 @@ describe("AuthenticateUser", () => {
         const { email, passwordHash } = await setupUser(repo);
     
         const user = await sut.execute(email, passwordHash);
-        expect(user.email).toBe(email);
-        expect(user.role).toBe(UserRole.SOCIETY);
+        expect(user).toMatchObject({
+            email,
+            role: UserRole.SOCIETY,
+            phone: "11999999999",
+            phoneIsWhats: false,
+        });
+        expect(user).not.toHaveProperty("passwordHash");
     });
 
     it("should throw when password does not match", async () => {
@@ -70,7 +75,12 @@ describe("AuthenticateUser", () => {
         const useCase = new AuthenticateUser(repo, new FakeHashComparer(true));
     
         const user = await useCase.execute(email, passwordHash);
-        expect(user.email).toBe(email);
-        expect(user.role).toBe(UserRole.SOCIETY);
+        expect(user).toMatchObject({
+            email,
+            role: UserRole.SOCIETY,
+            phone: "11999999999",
+            phoneIsWhats: false,
+        });
+        expect(user).not.toHaveProperty("passwordHash");
     });
 });

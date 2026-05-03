@@ -65,9 +65,19 @@ describe("AuthController", () => {
 
     it("should return 200 and access token on successful authentication", async () => {
         const fakeToken = faker.string.uuid();
+        const publicUser = {
+            id: faker.string.uuid(),
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+            avatar: faker.image.avatar(),
+            phone: "11999999999",
+            phoneIsWhats: true,
+            role: UserRole.SOCIETY,
+        };
+
         vi.mocked(authenticateUserMock.execute).mockResolvedValue({
             accessToken: fakeToken,
-            role: UserRole.SOCIETY,
+            user: publicUser,
         });
 
         const req = {
@@ -87,7 +97,7 @@ describe("AuthController", () => {
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({
             accessToken: fakeToken,
-            role: UserRole.SOCIETY,
+            user: publicUser,
         });
     });
 
