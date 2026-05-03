@@ -55,8 +55,13 @@ const swaggerDocument = {
             type: "string",
             example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
           },
+          role: {
+            type: "string",
+            enum: ["SOCIETY", "MEDIATOR", "STUDENT"],
+            example: "SOCIETY",
+          },
         },
-        required: ["accessToken"],
+        required: ["accessToken", "role"],
       },
       RegisterRequest: {
         type: "object",
