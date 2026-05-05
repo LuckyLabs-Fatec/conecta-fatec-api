@@ -29,7 +29,7 @@ API backend para gerenciamento das informações do Fatec Conecta.
 - Tipo de sistema: API.
 - Principais funcionalidades: autenticação, usuários, propostas, cursos, projetos, feedbacks, notificações e alunos em projetos.
 - Tecnologias e arquitetura adotadas: Node.js, TypeScript, Express, Prisma e PostgreSQL.
-- Diferenciais da solução:
+- Diferenciais da solução: organização centralizada das informações, suporte ao acompanhamento de projetos e base para evolução futura da aplicação.
 
 ---
 
@@ -46,9 +46,9 @@ Documentação da API disponível localmente em:
 
 ## Documentação do Projeto
 
-- Link do Confluence:
-- Link do Jira:
-- Link para o documento de requisitos:
+- Link do Confluence: https://lucasperes019.atlassian.net/wiki/x/pwAR
+- Link do Jira: https://lucasperes019.atlassian.net/jira/software/projects/KAN/boards/1?atlOrigin=eyJpIjoiZTc1ZGE2MzFjNzQ1NDE0NGJlNmIzM2ZlOTI3YmJmOTIiLCJwIjoiaiJ9
+- Link para o documento de requisitos: https://docs.google.com/document/d/1_367sDNBJmtn5zKlAZjEclivZgnFFTJURF9pW4ps5OY/edit?usp=sharing
 
 ---
 
@@ -56,19 +56,23 @@ Documentação da API disponível localmente em:
 
 | Nº Sprint | Objetivo | Data Início | Data Término |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| 1 | Configuração do ambiente, definição da arquitetura e implementação das funcionalidades de autenticação e cadastro de usuários. | 01/06/2024 | 14/06/2024 |
+| 2 | Implementação das funcionalidades de gerenciamento de propostas, cursos e projetos. | | 15/06/2024 | 28/06/2024 |
+| 3 | Implementação das funcionalidades de gerenciamento de feedbacks, notificações e alunos em projetos. | | 29/06/2024 | 12/07/2024 |
+| 4 | Testes, ajustes finais e preparação para entrega. | 13/07/2024 | | 26/07/2024 |   
 
 ---
 
 ## Tecnologias Utilizadas
 
 - **Linguagem**: TypeScript
-- **Frontend**:
+- **Frontend**: React, Next.js (em desenvolvimento)
 - **Backend**: Node.js, Express
 - **Banco de Dados**: PostgreSQL, Prisma
-- **Infraestrutura**:
+- **Infraestrutura**: Render, Neon
 - **Versionamento**: Git
-- **Gestão**:
+- **Gestão**: Jira, Confluence
+- **Documentação**: Swagger
 
 ---
 
