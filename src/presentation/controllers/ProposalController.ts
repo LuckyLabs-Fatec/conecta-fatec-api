@@ -215,7 +215,7 @@ export class ProposalController {
     } = req.body ?? {};
 
     try {
-      const proposalId = req.params.id;
+      const proposalId = this.getIdParam(req);
 
       if (!proposalId) {
         throw new InvalidProposalPayloadError("Proposal ID is required");
@@ -328,6 +328,11 @@ export class ProposalController {
     }
 
     return parsedValue;
+  }
+
+  private getIdParam(req: Request): string {
+    const idParam = req.params.id;
+    return Array.isArray(idParam) ? idParam[0] : idParam;
   }
 
   private serializeProposal(proposal: ProposalResponse) {

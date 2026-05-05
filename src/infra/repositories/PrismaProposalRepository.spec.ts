@@ -30,7 +30,7 @@ describe("PrismaProposalRepository", () => {
     });
 
     const sut = new PrismaProposalRepository({
-      proposal: { create, findMany: vi.fn(), count: vi.fn() },
+      proposal: { create, update: vi.fn(), findMany: vi.fn(), count: vi.fn() },
     });
 
     const proposal = await sut.create({
@@ -124,7 +124,7 @@ describe("PrismaProposalRepository", () => {
     ]);
 
     const sut = new PrismaProposalRepository({
-      proposal: { create: vi.fn(), findMany, count: vi.fn().mockResolvedValue(12) },
+      proposal: { create: vi.fn(), update: vi.fn(), findMany, count: vi.fn().mockResolvedValue(12) },
     });
 
     const paginated = await sut.findPaginated({ page: 2, limit: 5 });
@@ -209,7 +209,7 @@ describe("PrismaProposalRepository", () => {
     });
 
     const sut = new PrismaProposalRepository({
-      proposal: { create, findMany: vi.fn(), count: vi.fn() },
+      proposal: { create, update: vi.fn(), findMany: vi.fn(), count: vi.fn() },
     });
 
     const proposal = await sut.create({
@@ -238,6 +238,7 @@ describe("PrismaProposalRepository", () => {
     const sut = new PrismaProposalRepository({
       proposal: {
         create: vi.fn(),
+        update: vi.fn(),
         findMany: vi.fn().mockResolvedValue([]),
         count: vi.fn().mockResolvedValue(0),
       },
@@ -281,7 +282,7 @@ describe("PrismaProposalRepository", () => {
     const count = vi.fn().mockResolvedValue(1);
 
     const sut = new PrismaProposalRepository({
-      proposal: { create: vi.fn(), findMany, count },
+      proposal: { create: vi.fn(), update: vi.fn(), findMany, count },
     });
 
     const paginated = await sut.findPaginatedByUser({ page: 3, limit: 5, userId: "society-user-id" });
