@@ -2,7 +2,13 @@ import { Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { faker } from "@faker-js/faker";
 
-import { AuthController, AuthenticateUserContract } from "./AuthController";
+import {
+    AuthController,
+    AuthenticateUserContract,
+    DeleteUserContract,
+    UpdateUserContract,
+    UpdateUserRequest,
+} from "./AuthController";
 
 import { InvalidCredentialsError } from "@/domain/errors/InvalidCredentialsError";
 import { UserRole } from "@/domain/models/User";
@@ -12,9 +18,17 @@ import { UserRole } from "@/domain/models/User";
 describe("AuthController", () => {
     let authController: AuthController;
     let authenticateUserMock: AuthenticateUserContract;
+    let updateUserMock: UpdateUserContract;
+    let deleteUserMock: DeleteUserContract;
 
     beforeEach(() => {
         authenticateUserMock = {
+            execute: vi.fn(),
+        };
+        updateUserMock = {
+            execute: vi.fn(),
+        };
+        deleteUserMock = {
             execute: vi.fn(),
         };
 
@@ -179,6 +193,162 @@ describe("AuthController", () => {
         } as unknown as Response;
 
         await controller.register(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });
+    });
+
+    it("should return 200 and updated user on full register update", async () => {
+        const userId = faker.string.uuid();
+        const updatedUser = {
+            id: userId,
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+            avatar: faker.image.avatar(),
+            phone: "11999999999",
+            phoneIsWhats: true,
+        };
+        vi.mocked(updateUserMock.execute).mockResolvedValue(updatedUser);
+
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            params: { id: userId },
+            body: {
+                email: updatedUser.email,
+                password: faker.internet.password(),
+                name: updatedUser.name,
+                avatar: updatedUser.avatar,
+                phone: updatedUser.phone,
+                phoneIsWhats: updatedUser.phoneIsWhats,
+            } satisfies UpdateUserRequest,
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.update(req, res);
+
+        expect(updateUserMock.execute).toHaveBeenCalledWith(userId, req.body, "full");
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(updatedUser);
+    });
+
+    it("should return 400 when full register update has missing required fields", async () => {
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            params: { id: faker.string.uuid() },
+            body: {
+                name: faker.person.fullName(),
+            },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.update(req, res);
+
+        expect(updateUserMock.execute).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: "Missing required fields" });
+    });
+
+    it("should return 200 and updated user on partial register update", async () => {
+        const userId = faker.string.uuid();
+        const updatedUser = {
+            id: userId,
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+            avatar: faker.image.avatar(),
+            phone: "11999999999",
+            phoneIsWhats: false,
+        };
+        vi.mocked(updateUserMock.execute).mockResolvedValue(updatedUser);
+
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            params: { id: userId },
+            body: {
+                phone: updatedUser.phone,
+                phoneIsWhats: updatedUser.phoneIsWhats,
+            },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.patch(req, res);
+
+        expect(updateUserMock.execute).toHaveBeenCalledWith(userId, req.body, "partial");
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(updatedUser);
+    });
+
+    it("should return mapped error when partial register update fails", async () => {
+        vi.mocked(updateUserMock.execute).mockRejectedValue(new Error());
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            params: { id: faker.string.uuid() },
+            body: {
+                name: faker.person.fullName(),
+            },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.patch(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });
+    });
+
+    it("should return 204 when register is soft deleted", async () => {
+        const userId = faker.string.uuid();
+        vi.mocked(deleteUserMock.execute).mockResolvedValue();
+        const controller = new AuthController(authenticateUserMock, undefined, undefined, deleteUserMock);
+
+        const req = {
+            params: { id: userId },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            send: vi.fn(),
+        } as unknown as Response;
+
+        await controller.delete(req, res);
+
+        expect(deleteUserMock.execute).toHaveBeenCalledWith(userId);
+        expect(res.status).toHaveBeenCalledWith(204);
+        expect(res.send).toHaveBeenCalledWith();
+    });
+
+    it("should return mapped error when register soft delete fails", async () => {
+        vi.mocked(deleteUserMock.execute).mockRejectedValue(new Error());
+        const controller = new AuthController(authenticateUserMock, undefined, undefined, deleteUserMock);
+
+        const req = {
+            params: { id: faker.string.uuid() },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.delete(req, res);
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });

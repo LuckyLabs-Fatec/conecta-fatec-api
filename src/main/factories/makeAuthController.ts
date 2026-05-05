@@ -4,87 +4,119 @@ import { sign } from "jsonwebtoken";
 import { InvalidCredentialsError } from "@/domain/errors/InvalidCredentialsError";
 import { UserAlreadyExistsError } from "@/domain/errors/UserAlreadyExistsError";
 import { PrismaUserRepository } from "@/infra/repositories/PrismaUserRepository";
-import { AuthController, CreateUserRequest } from "@/presentation/controllers/AuthController";
+import { AuthController, CreateUserRequest, UpdateUserRequest } from "@/presentation/controllers/AuthController";
 
 export function makeAuthController(): AuthController {
   const userRepository = new PrismaUserRepository();
 
-  return new AuthController({
-    async execute(email: string, password: string) {
-      const user = await userRepository.findByEmail(email);
+  return new AuthController(
+    {
+      async execute(email: string, password: string) {
+        const user = await userRepository.findByEmail(email);
 
-      if (!user) {
-        throw new InvalidCredentialsError();
-      }
-
-      const passwordMatches = await compare(password, user.passwordHash);
-
-      if (!passwordMatches) {
-        throw new InvalidCredentialsError();
-      }
-
-      const jwtSecret = process.env.JWT_SECRET;
-
-      if (!jwtSecret) {
-        throw new Error("JWT_SECRET is not configured");
-      }
-
-      const jwtExpiresIn =
-        (process.env.JWT_EXPIRES_IN ?? "15m") as Parameters<typeof sign>[2]["expiresIn"];
-
-      const accessToken = sign(
-        {
-          email: user.email,
-          role: user.role,
-        },
-        jwtSecret,
-        {
-          subject: user.id,
-          expiresIn: jwtExpiresIn,
+        if (!user) {
+          throw new InvalidCredentialsError();
         }
-      );
 
-      return {
-        accessToken,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          avatar: user.avatar,
-          phone: user.phone,
-          phoneIsWhats: user.phoneIsWhats,
-          role: user.role,
-        },
-      };
+        const passwordMatches = await compare(password, user.passwordHash);
 
+        if (!passwordMatches) {
+          throw new InvalidCredentialsError();
+        }
+
+        const jwtSecret = process.env.JWT_SECRET;
+
+        if (!jwtSecret) {
+          throw new Error("JWT_SECRET is not configured");
+        }
+
+        const jwtExpiresIn =
+          (process.env.JWT_EXPIRES_IN ?? "15m") as Parameters<typeof sign>[2]["expiresIn"];
+
+        const accessToken = sign(
+          {
+            email: user.email,
+            role: user.role,
+          },
+          jwtSecret,
+          {
+            subject: user.id,
+            expiresIn: jwtExpiresIn,
+          }
+        );
+
+        return {
+          accessToken,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            avatar: user.avatar,
+            phone: user.phone,
+            phoneIsWhats: user.phoneIsWhats,
+            role: user.role,
+          },
+        };
+
+      },
     },
-  }, {
-    async execute(data: CreateUserRequest) {
-      const existingUser = await userRepository.findByEmail(data.email);
+    {
+      async execute(data: CreateUserRequest) {
+        const existingUser = await userRepository.findByEmail(data.email);
 
-      if (existingUser) {
-        throw new UserAlreadyExistsError();
-      }
+        if (existingUser) {
+          throw new UserAlreadyExistsError();
+        }
 
-      const passwordHash = await hash(data.password, 8);
+        const passwordHash = await hash(data.password, 8);
 
-      const createdUser = await userRepository.create({
-        email: data.email,
-        passwordHash,
-        name: data.name,
-        avatar: data.avatar,
-        phone: data.phone,
-        phoneIsWhats: data.phoneIsWhats,
-      });
+        const createdUser = await userRepository.create({
+          email: data.email,
+          passwordHash,
+          name: data.name,
+          avatar: data.avatar,
+          phone: data.phone,
+          phoneIsWhats: data.phoneIsWhats,
+          active: true,
+        });
 
-      return {
-        id: createdUser.id,
-        email: createdUser.email,
-        name: createdUser.name,
-        avatar: createdUser.avatar,
-        phone: createdUser.phone,
-        phoneIsWhats: createdUser.phoneIsWhats,
-      };
+        return {
+          id: createdUser.id,
+          email: createdUser.email,
+          name: createdUser.name,
+          avatar: createdUser.avatar,
+          phone: createdUser.phone,
+          phoneIsWhats: createdUser.phoneIsWhats,
+        };
+      },
     },
-  });
+    {
+      async execute(id: string, data: UpdateUserRequest) {
+        const updateData = {
+          email: data.email,
+          passwordHash: data.password ? await hash(data.password, 8) : undefined,
+          name: data.name,
+          avatar: data.avatar,
+          phone: data.phone,
+          phoneIsWhats: data.phoneIsWhats,
+        };
+
+        const updatedUser = await userRepository.update(id, updateData);
+
+        return {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          avatar: updatedUser.avatar,
+          phone: updatedUser.phone,
+          phoneIsWhats: updatedUser.phoneIsWhats,
+        };
+      },
+    },
+    {
+      async execute(id: string) {
+        await userRepository.softDelete(id);
+      },
+    }
+  );
 }

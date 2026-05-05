@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 
+import { InvalidPayloadError } from "@/domain/errors/InvalidPayloadError";
 import { PublicUser } from "@/domain/models/User";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
@@ -19,6 +20,9 @@ export type CreateUserRequest = {
   phoneIsWhats?: boolean;
 };
 
+export type UpdateUserRequest = Partial<CreateUserRequest>;
+export type UpdateUserMode = "full" | "partial";
+
 export type AuthenticateUserContract = {
   execute(email: string, password: string): Promise<AuthenticateUserResponse>;
 };
@@ -27,10 +31,20 @@ export type CreateUserContract = {
   execute(data: CreateUserRequest): Promise<CreateUserResponse>;
 };
 
+export type UpdateUserContract = {
+  execute(id: string, data: UpdateUserRequest, mode: UpdateUserMode): Promise<CreateUserResponse>;
+};
+
+export type DeleteUserContract = {
+  execute(id: string): Promise<void>;
+};
+
 export class AuthController {
   constructor(
     private readonly authenticateUser: AuthenticateUserContract,
     private readonly createUser?: CreateUserContract,
+    private readonly updateUser?: UpdateUserContract,
+    private readonly deleteUser?: DeleteUserContract,
   ) {}
 
   async login(req: Request, res: Response): Promise<void> {
@@ -62,5 +76,63 @@ export class AuthController {
       const message = HttpErrorMapper.getMessage(error);
       res.status(statusCode).json({ message });
     }
+  }
+
+  async update(req: Request, res: Response): Promise<void> {
+    await this.updateRegister(req, res, "full");
+  }
+
+  async patch(req: Request, res: Response): Promise<void> {
+    await this.updateRegister(req, res, "partial");
+  }
+
+  async delete(req: Request, res: Response): Promise<void> {
+    if (!this.deleteUser) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    try {
+      await this.deleteUser.execute(this.getIdParam(req));
+      res.status(204).send();
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
+  private async updateRegister(req: Request, res: Response, mode: UpdateUserMode): Promise<void> {
+    if (!this.updateUser) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    try {
+      if (mode === "full") {
+        this.ensureFullUpdatePayload(req.body);
+      }
+
+      const result = await this.updateUser.execute(this.getIdParam(req), req.body, mode);
+      res.status(200).json(result);
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
+  private ensureFullUpdatePayload(body: UpdateUserRequest): void {
+    const requiredFields = ["email", "password", "name", "avatar", "phone", "phoneIsWhats"] as const;
+    const hasAllRequiredFields = requiredFields.every((field) => body[field] !== undefined);
+
+    if (!hasAllRequiredFields) {
+      throw new InvalidPayloadError("Missing required fields");
+    }
+  }
+
+  private getIdParam(req: Request): string {
+    const idParam = req.params.id;
+    return Array.isArray(idParam) ? idParam[0] : idParam;
   }
 }

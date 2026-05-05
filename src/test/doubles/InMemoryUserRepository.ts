@@ -1,11 +1,13 @@
 import { User, UserRole } from "@/domain/models/User";
-import { CreateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
+import { CreateUserParams, UpdateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
+
+type UserFixture = Omit<User, "active"> & { active?: boolean };
 
 export class InMemoryUserRepository implements UserRepository {
   private users: User[] = [];
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.users.find((user) => user.email === email) ?? null;
+    return this.users.find((user) => user.email === email && user.active !== false) ?? null;
   }
 
   async create(data: CreateUserParams): Promise<User> {
@@ -18,13 +20,37 @@ export class InMemoryUserRepository implements UserRepository {
       phone: data.phone,
       phoneIsWhats: data.phoneIsWhats ?? false,
       role: data.role ?? UserRole.SOCIETY,
+      active: data.active ?? true,
     };
 
     this.users.push(user);
     return user;
   }
 
-  async insert(user: User) {
-    this.users.push(user);
+  async update(id: string, data: UpdateUserParams): Promise<User> {
+    const userIndex = this.users.findIndex((user) => user.id === id);
+
+    if (userIndex < 0) {
+      throw new Error("User not found");
+    }
+
+    const updatedUser = {
+      ...this.users[userIndex],
+      ...data,
+    };
+
+    this.users[userIndex] = updatedUser;
+    return updatedUser;
+  }
+
+  async softDelete(id: string): Promise<User> {
+    return this.update(id, { active: false });
+  }
+
+  async insert(user: UserFixture) {
+    this.users.push({
+      ...user,
+      active: user.active ?? true,
+    });
   }
 }

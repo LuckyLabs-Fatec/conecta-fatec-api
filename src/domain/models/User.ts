@@ -13,6 +13,7 @@ export interface User {
   phone: string;
   phoneIsWhats: boolean;
   role: UserRole;
+  active: boolean;
 }
 
 export interface PublicUser {

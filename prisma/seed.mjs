@@ -22,6 +22,7 @@ const users = [
     phone: "11999999999",
     phoneIsWhats: true,
     role: "SOCIETY",
+    active: true,
   },
   {
     id: "d2222222-2222-4222-8222-222222222222",
@@ -32,6 +33,7 @@ const users = [
     phone: "11888888888",
     phoneIsWhats: false,
     role: "MEDIATOR",
+    active: true,
   },
   {
     id: "d3333333-3333-4333-8333-333333333333",
@@ -42,6 +44,7 @@ const users = [
     phone: "11777777777",
     phoneIsWhats: true,
     role: "STUDENT",
+    active: true,
   },
 ];
 
@@ -226,6 +229,7 @@ async function main() {
         phoneIsWhats: user.phoneIsWhats,
         passwordHash,
         role: user.role,
+        active: user.active,
       },
       create: {
         id: user.id,
@@ -236,6 +240,7 @@ async function main() {
         phoneIsWhats: user.phoneIsWhats,
         passwordHash,
         role: user.role,
+        active: user.active,
       },
     });
   }

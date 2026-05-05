@@ -16,6 +16,7 @@ describe("PrismaUserRepository", () => {
       phone: "11999999999",
       phoneIsWhats: true,
       role: "SOCIETY",
+      active: true,
     });
 
     const sut = new PrismaUserRepository(
@@ -42,6 +43,7 @@ describe("PrismaUserRepository", () => {
         phone: "11999999999",
         phoneIsWhats: true,
         role: "SOCIETY",
+        active: true,
       },
     });
     expect(user).toEqual({
@@ -53,6 +55,7 @@ describe("PrismaUserRepository", () => {
       phone: "11999999999",
       phoneIsWhats: true,
       role: "SOCIETY",
+      active: true,
     });
   });
 
@@ -68,7 +71,7 @@ describe("PrismaUserRepository", () => {
 
     expect(user).toBeNull();
     expect(findUnique).toHaveBeenCalledWith({
-      where: { email: "nonexistent@example.com" },
+      where: { email: "nonexistent@example.com", active: true },
     });
   });
 
@@ -108,6 +111,7 @@ describe("PrismaUserRepository", () => {
         phone: "11666666666",
         phoneIsWhats: false,
         role: "MEDIATOR",
+        active: true,
       },
     });
     expect(user.role).toBe("MEDIATOR");
@@ -123,6 +127,7 @@ describe("PrismaUserRepository", () => {
       phone: "11888888888",
       phoneIsWhats: false,
       role: "SOCIETY",
+      active: true,
     });
 
     const sut = new PrismaUserRepository(
@@ -142,6 +147,7 @@ describe("PrismaUserRepository", () => {
       phone: "11888888888",
       phoneIsWhats: false,
       role: "SOCIETY",
+      active: true,
     });
   });
 
@@ -155,6 +161,7 @@ describe("PrismaUserRepository", () => {
       phone: "11777777777",
       phoneIsWhats: false,
       role: "SOCIETY",
+      active: true,
     });
 
     const sut = new PrismaUserRepository(
@@ -178,6 +185,7 @@ describe("PrismaUserRepository", () => {
         phone: "11777777777",
         phoneIsWhats: false,
         role: "SOCIETY",
+        active: true,
       },
     });
     expect(user).toEqual({
@@ -189,6 +197,7 @@ describe("PrismaUserRepository", () => {
       phone: "11777777777",
       phoneIsWhats: false,
       role: "SOCIETY",
+      active: true,
     });
   });
 
@@ -202,6 +211,7 @@ describe("PrismaUserRepository", () => {
       phone: "11555555555",
       phoneIsWhats: false,
       role: "SOCIETY",
+      active: true,
     });
 
     const sut = new PrismaUserRepository(
@@ -221,6 +231,115 @@ describe("PrismaUserRepository", () => {
       phone: "11555555555",
       phoneIsWhats: false,
       role: "SOCIETY",
+      active: true,
     });
+  });
+
+  it("should update and return mapped user", async () => {
+    const update = vi.fn().mockResolvedValue({
+      id: "user-id",
+      email: "updated@example.com",
+      passwordHash: "new-hashed-password",
+      name: "Updated User",
+      avatar: "https://cdn.example.com/avatar-updated.png",
+      phone: "11999999999",
+      phoneIsWhats: true,
+      role: "SOCIETY",
+      active: true,
+    });
+    const sut = new PrismaUserRepository(
+      {
+        user: { update, create: vi.fn(), findUnique: vi.fn() },
+      } as unknown as PrismaClient
+    );
+
+    const user = await sut.update("user-id", {
+      email: "updated@example.com",
+      passwordHash: "new-hashed-password",
+      name: "Updated User",
+      avatar: "https://cdn.example.com/avatar-updated.png",
+      phone: "11999999999",
+      phoneIsWhats: true,
+    });
+
+    expect(update).toHaveBeenCalledWith({
+      where: { id: "user-id" },
+      data: {
+        email: "updated@example.com",
+        passwordHash: "new-hashed-password",
+        name: "Updated User",
+        avatar: "https://cdn.example.com/avatar-updated.png",
+        phone: "11999999999",
+        phoneIsWhats: true,
+      },
+    });
+    expect(user).toEqual({
+      id: "user-id",
+      email: "updated@example.com",
+      passwordHash: "new-hashed-password",
+      name: "Updated User",
+      avatar: "https://cdn.example.com/avatar-updated.png",
+      phone: "11999999999",
+      phoneIsWhats: true,
+      role: "SOCIETY",
+      active: true,
+    });
+  });
+
+  it("should update only provided user fields", async () => {
+    const update = vi.fn().mockResolvedValue({
+      id: "user-id",
+      email: "existent@example.com",
+      passwordHash: "hashed-password",
+      name: "Partial User",
+      avatar: null,
+      phone: "11888888888",
+      phoneIsWhats: false,
+      role: "SOCIETY",
+    });
+    const sut = new PrismaUserRepository(
+      {
+        user: { update, create: vi.fn(), findUnique: vi.fn() },
+      } as unknown as PrismaClient
+    );
+
+    const user = await sut.update("user-id", {
+      name: "Partial User",
+    });
+
+    expect(update).toHaveBeenCalledWith({
+      where: { id: "user-id" },
+      data: {
+        name: "Partial User",
+      },
+    });
+    expect(user.name).toBe("Partial User");
+  });
+
+  it("should soft delete user by marking it inactive", async () => {
+    const update = vi.fn().mockResolvedValue({
+      id: "user-id",
+      email: "inactive@example.com",
+      passwordHash: "hashed-password",
+      name: "Inactive User",
+      avatar: null,
+      phone: "11888888888",
+      phoneIsWhats: false,
+      role: "SOCIETY",
+      active: false,
+    });
+    const sut = new PrismaUserRepository(
+      {
+        user: { update, create: vi.fn(), findUnique: vi.fn() },
+      } as unknown as PrismaClient
+    );
+
+    const user = await sut.softDelete("user-id");
+
+    expect(update).toHaveBeenCalledWith({
+      where: { id: "user-id" },
+      data: { active: false },
+    });
+    expect(user.active).toBe(false);
   });
 });

@@ -1,7 +1,7 @@
 import { PrismaClient, UserRole as PrismaUserRole } from "@prisma/client";
 
 import { User, UserRole } from "@/domain/models/User";
-import { CreateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
+import { CreateUserParams, UpdateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
 import { getPrismaClient } from "@/infra/database/prisma/client";
 
 export class PrismaUserRepository implements UserRepository {
@@ -17,30 +17,54 @@ export class PrismaUserRepository implements UserRepository {
         phone: data.phone,
         phoneIsWhats: data.phoneIsWhats ?? false,
         role: (data.role as PrismaUserRole | undefined) ?? PrismaUserRole.SOCIETY,
+        active: data.active ?? true,
       },
     });
 
-    return {
-      id: createdUser.id,
-      email: createdUser.email,
-      passwordHash: createdUser.passwordHash,
-      name: createdUser.name ?? undefined,
-      avatar: createdUser.avatar ?? undefined,
-      phone: createdUser.phone,
-      phoneIsWhats: createdUser.phoneIsWhats,
-      role: createdUser.role as UserRole,
-    };
+    return this.mapUser(createdUser);
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.db.user.findUnique({
-      where: { email },
+      where: { email, active: true },
     });
 
     if (!user) {
       return null;
     }
 
+    return this.mapUser(user);
+  }
+
+  async update(id: string, data: UpdateUserParams): Promise<User> {
+    const updatedUser = await this.db.user.update({
+      where: { id },
+      data,
+    });
+
+    return this.mapUser(updatedUser);
+  }
+
+  async softDelete(id: string): Promise<User> {
+    const updatedUser = await this.db.user.update({
+      where: { id },
+      data: { active: false },
+    });
+
+    return this.mapUser(updatedUser);
+  }
+
+  private mapUser(user: {
+    id: string;
+    email: string;
+    passwordHash: string;
+    name: string | null;
+    avatar: string | null;
+    phone: string;
+    phoneIsWhats: boolean;
+    role: PrismaUserRole;
+    active?: boolean;
+  }): User {
     return {
       id: user.id,
       email: user.email,
@@ -50,6 +74,7 @@ export class PrismaUserRepository implements UserRepository {
       phone: user.phone,
       phoneIsWhats: user.phoneIsWhats,
       role: user.role as UserRole,
+      active: user.active ?? true,
     };
   }
 }

@@ -23,6 +23,7 @@ model User {
   phone           String           @map("telefone") @db.VarChar(15)
   phoneIsWhats    Boolean          @default(false) @map("telefone_is_whats")
   role            UserRole         @default(SOCIETY)
+  active          Boolean          @default(true)
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   proposals       Proposal[]

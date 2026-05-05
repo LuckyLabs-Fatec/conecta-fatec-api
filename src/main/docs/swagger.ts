@@ -175,6 +175,73 @@ const swaggerDocument = {
         },
         required: ["id", "email", "phone", "phoneIsWhats"],
       },
+      UpdateRegisterRequest: {
+        type: "object",
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+            example: "usuario-atualizado@email.com",
+          },
+          password: {
+            type: "string",
+            example: "nova-senha-forte",
+          },
+          name: {
+            type: "string",
+            example: "Usuário Atualizado",
+          },
+          avatar: {
+            type: "string",
+            format: "uri",
+            nullable: true,
+            example: "https://cdn.conecta-fatec.com/avatars/usuario-atualizado.png",
+          },
+          phone: {
+            type: "string",
+            maxLength: 15,
+            example: "11999999999",
+          },
+          phoneIsWhats: {
+            type: "boolean",
+            example: true,
+          },
+        },
+        required: ["email", "password", "name", "avatar", "phone", "phoneIsWhats"],
+      },
+      PatchRegisterRequest: {
+        type: "object",
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+            example: "usuario-atualizado@email.com",
+          },
+          password: {
+            type: "string",
+            example: "nova-senha-forte",
+          },
+          name: {
+            type: "string",
+            example: "Usuário Atualizado",
+          },
+          avatar: {
+            type: "string",
+            format: "uri",
+            nullable: true,
+            example: "https://cdn.conecta-fatec.com/avatars/usuario-atualizado.png",
+          },
+          phone: {
+            type: "string",
+            maxLength: 15,
+            example: "11999999999",
+          },
+          phoneIsWhats: {
+            type: "boolean",
+            example: true,
+          },
+        },
+      },
       CreateProposalRequest: {
         type: "object",
         properties: {
