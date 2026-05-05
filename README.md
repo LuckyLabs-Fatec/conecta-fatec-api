@@ -40,6 +40,14 @@ Documentação da API disponível localmente em:
 - Link do Jira: https://lucasperes019.atlassian.net/jira/software/projects/KAN/boards/1?atlOrigin=eyJpIjoiZTc1ZGE2MzFjNzQ1NDE0NGJlNmIzM2ZlOTI3YmJmOTIiLCJwIjoiaiJ9
 - Link para o documento de requisitos: https://docs.google.com/document/d/1_367sDNBJmtn5zKlAZjEclivZgnFFTJURF9pW4ps5OY/edit?usp=sharing
 
+## 👥 Membros do Grupo
+
+- Lucas Silva Peres
+- Gustavo Campos Antunes
+- Juan Lucas Silva
+- Thiago Martins Domingues
+- Gustavo Pires Formigoni
+
 ## 🗓️ Sprints
 
 | Nº Sprint | Objetivo | Data Início | Data Término | Status |
