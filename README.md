@@ -1,18 +1,14 @@
-# Projeto Integrador: Fatec Conecta API
+# 🚀 Projeto Integrador: Fatec Conecta API
 
 > Solução de software end-to-end para transformar desafios da comunidade em projetos desenvolvidos por alunos da Fatec.
 
----
-
-## Visão Geral
+## 📌 Visão Geral
 
 Este projeto tem como objetivo desenvolver uma API para o projeto Fatec Conecta, criado para a disciplina de Desenvolvimento Web III, ministrada pela professora Janaina.
 
 A solução apoia o fluxo de cadastro, organização e acompanhamento de propostas, projetos, cursos, feedbacks, notificações e alunos vinculados a projetos.
 
----
-
-## Problema de Negócio
+## 🎯 Problema de Negócio
 
 O projeto busca atender à necessidade de conectar demandas da comunidade com projetos acadêmicos desenvolvidos por alunos.
 
@@ -20,9 +16,7 @@ O projeto busca atender à necessidade de conectar demandas da comunidade com pr
 - Quem é impactado? Comunidade, alunos, mediadores e participantes do projeto Fatec Conecta.
 - Qual processo ou necessidade precisa ser atendida? Registro de propostas, gestão de projetos e acompanhamento das interações entre os envolvidos.
 
----
-
-## Solução Proposta
+## 💡 Solução Proposta
 
 API backend para gerenciamento das informações do Fatec Conecta.
 
@@ -31,9 +25,7 @@ API backend para gerenciamento das informações do Fatec Conecta.
 - Tecnologias e arquitetura adotadas: Node.js, TypeScript, Express, Prisma e PostgreSQL.
 - Diferenciais da solução: organização centralizada das informações, suporte ao acompanhamento de projetos e base para evolução futura da aplicação.
 
----
-
-## Arquitetura da Solução
+## 🏗️ Arquitetura da Solução
 
 Cliente/API Consumer -> API Express -> Camada de Controllers -> Repositórios Prisma -> Banco de Dados PostgreSQL
 
@@ -42,28 +34,23 @@ Documentação da API disponível localmente em:
 - `http://localhost:8080/docs`
 - `http://localhost:8080/docs.json`
 
----
-
-## Documentação do Projeto
+## 📚 Documentação do Projeto
 
 - Link do Confluence: https://lucasperes019.atlassian.net/wiki/x/pwAR
 - Link do Jira: https://lucasperes019.atlassian.net/jira/software/projects/KAN/boards/1?atlOrigin=eyJpIjoiZTc1ZGE2MzFjNzQ1NDE0NGJlNmIzM2ZlOTI3YmJmOTIiLCJwIjoiaiJ9
 - Link para o documento de requisitos: https://docs.google.com/document/d/1_367sDNBJmtn5zKlAZjEclivZgnFFTJURF9pW4ps5OY/edit?usp=sharing
 
----
+## 🗓️ Sprints
 
-## Sprints
+| Nº Sprint | Objetivo | Data Início | Data Término | Status |
+| --- | --- | --- | --- | --- |
+| 1 | Limpeza de menções ao Supabase. | 07/04/2026 | 21/04/2026 | Concluída |
+| 2 | CRUD inicial de cadastro de usuários e ideias/propostas. | 28/04/2026 | 05/05/2026 | Em andamento |
+| 3 | Estrutura de permissionamento para as rotas da API e para as telas do front-end. | 11/05/2026 | 18/05/2026 | Não iniciado |
+| 4 | Telas do site integradas com as rotas da API. | 20/05/2026 | 17/06/2026 | Não iniciado |
 
-| Nº Sprint | Objetivo | Data Início | Data Término |
-| --- | --- | --- | --- |
-| 1 | Configuração do ambiente, definição da arquitetura e implementação das funcionalidades de autenticação e cadastro de usuários. | 01/06/2024 | 14/06/2024 |
-| 2 | Implementação das funcionalidades de gerenciamento de propostas, cursos e projetos. | | 15/06/2024 | 28/06/2024 |
-| 3 | Implementação das funcionalidades de gerenciamento de feedbacks, notificações e alunos em projetos. | | 29/06/2024 | 12/07/2024 |
-| 4 | Testes, ajustes finais e preparação para entrega. | 13/07/2024 | | 26/07/2024 |   
 
----
-
-## Tecnologias Utilizadas
+## 🛠️ Tecnologias Utilizadas
 
 - **Linguagem**: TypeScript
 - **Frontend**: React, Next.js (em desenvolvimento)
@@ -74,9 +61,7 @@ Documentação da API disponível localmente em:
 - **Gestão**: Jira, Confluence
 - **Documentação**: Swagger
 
----
-
-## Funcionalidades
+## ⚙️ Funcionalidades
 
 - Autenticação e cadastro de usuários.
 - Gerenciamento de propostas.
@@ -86,25 +71,21 @@ Documentação da API disponível localmente em:
 - Gerenciamento de notificações.
 - Gerenciamento de alunos em projetos.
 
----
-
-## Resultados Esperados
+## ✅ Resultados Esperados
 
 - Organização das propostas enviadas pela comunidade.
 - Apoio ao acompanhamento de projetos desenvolvidos por alunos.
 - Centralização das informações do projeto Fatec Conecta.
 - Base para evolução futura da aplicação.
 
----
+## ▶️ Como Executar o Projeto
 
-## Como Executar o Projeto
-
-### Pré-requisitos
+### 📋 Pré-requisitos
 
 - Node.js 22
 - pnpm
 
-### Instalação
+### 📦 Instalação
 
 1. Crie um arquivo `.env` na raiz do projeto e adicione as variáveis necessárias:
 
@@ -125,7 +106,7 @@ Ou copie o arquivo `.env-example` e renomeie como `.env`.
 pnpm install
 ```
 
-### Execução
+### ▶️ Execução
 
 Para iniciar o servidor em modo de desenvolvimento, utilize o comando:
 
@@ -139,19 +120,19 @@ O servidor estará rodando em:
 http://localhost:8080
 ```
 
-### Build
+### 🏗️ Build
 
 ```bash
 pnpm run build
 ```
 
-### Testes
+### 🧪 Testes
 
 ```bash
 pnpm run test
 ```
 
-### Debug
+### 🐞 Debug
 
 - Para debugar o servidor no VS Code, copie o arquivo `.vscode/example-launch.json` para `.vscode/launch.json`.
 - Em seguida, rode o projeto localmente com `F5`.
