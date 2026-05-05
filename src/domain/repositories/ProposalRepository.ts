@@ -12,6 +12,17 @@ export type CreateProposalParams = {
   optionalContactEmail?: string;
 };
 
+export type UpdateProposalParams = {
+  title?: string;
+  description?: string;
+  submissionDate?: Date;
+  status?: string;
+  attachments?: Buffer;
+  optionalContactPhone?: string;
+  optionalContactPhoneIsWhats?: boolean;
+  optionalContactEmail?: string;
+};
+
 export type ListProposalsParams = {
   page: number;
   limit: number;
@@ -31,6 +42,7 @@ export type PaginatedProposals = {
 
 export interface ProposalRepository {
   create(data: CreateProposalParams): Promise<Proposal>;
+  update(id: string, data: UpdateProposalParams): Promise<Proposal>;
   findPaginated(params: ListProposalsParams): Promise<PaginatedProposals>;
   findPaginatedByUser(params: ListUserProposalsParams): Promise<PaginatedProposals>;
 }

@@ -13,5 +13,8 @@ proposalRoutes.get("/", (req, res) => proposalController.list(req, res));
 proposalRoutes.get("/mine", ensureAuthenticatedCommunityUser, (req, res) =>
 	proposalController.listMine(req, res),
 );
+proposalRoutes.put("/:id", ensureAuthenticatedCommunityUser, (req, res) =>
+	proposalController.update(req, res),
+);
 
 export { proposalRoutes };

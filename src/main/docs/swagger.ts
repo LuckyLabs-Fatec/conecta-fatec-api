@@ -288,6 +288,51 @@ const swaggerDocument = {
         },
         required: ["title", "description", "submissionDate", "status", "attachments"],
       },
+      UpdateProposalRequest: {
+        type: "object",
+        properties: {
+          title: {
+            type: "string",
+            example: "Mobilidade Inteligente no Campus (Atualizado)",
+          },
+          description: {
+            type: "string",
+            example: "Uma proposta atualizada para otimizar o transporte interno e a acessibilidade no campus.",
+          },
+          submissionDate: {
+            type: "string",
+            format: "date-time",
+            example: "2026-04-26T10:00:00.000Z",
+          },
+          status: {
+            type: "string",
+            example: "IN_REVIEW",
+          },
+          attachments: {
+            type: "string",
+            format: "byte",
+            example: "cGxhbm8tZGUtbW9iaWxpZGFkZS12Mg==",
+          },
+          optionalContactPhone: {
+            type: "string",
+            maxLength: 15,
+            nullable: true,
+            example: "11999999999",
+          },
+          optionalContactPhoneIsWhats: {
+            type: "boolean",
+            default: false,
+            example: true,
+          },
+          optionalContactEmail: {
+            type: "string",
+            format: "email",
+            maxLength: 100,
+            nullable: true,
+            example: "proposal-contact-updated@example.com",
+          },
+        },
+      },
       ProposalAuthor: {
         type: "object",
         properties: {

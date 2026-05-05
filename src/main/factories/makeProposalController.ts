@@ -1,6 +1,7 @@
 import { PrismaProposalRepository } from "@/infra/repositories/PrismaProposalRepository";
 import {
   CreateProposalRequest,
+  UpdateProposalRequest,
   ProposalController,
   ProposalResponse,
 } from "@/presentation/controllers/ProposalController";
@@ -57,6 +58,33 @@ export function makeProposalController(): ProposalController {
         totalPages: number;
       }> {
         return proposalRepository.findPaginatedByUser({ page, limit, userId });
+      },
+    },
+    {
+      async execute(id: string, data: UpdateProposalRequest) {
+        const updatedProposal = await proposalRepository.update(id, {
+          title: data.title,
+          description: data.description,
+          submissionDate: data.submissionDate,
+          status: data.status,
+          attachments: data.attachments,
+          optionalContactPhone: data.optionalContactPhone,
+          optionalContactPhoneIsWhats: data.optionalContactPhoneIsWhats,
+          optionalContactEmail: data.optionalContactEmail,
+        });
+
+        return {
+          id: updatedProposal.id,
+          title: updatedProposal.title,
+          description: updatedProposal.description,
+          submissionDate: updatedProposal.submissionDate,
+          status: updatedProposal.status,
+          attachments: updatedProposal.attachments,
+          optionalContactPhone: updatedProposal.optionalContactPhone,
+          optionalContactPhoneIsWhats: updatedProposal.optionalContactPhoneIsWhats,
+          optionalContactEmail: updatedProposal.optionalContactEmail,
+          user: updatedProposal.user,
+        };
       },
     },
   );

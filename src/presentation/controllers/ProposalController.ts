@@ -37,8 +37,23 @@ export type CreateProposalRequest = {
   optionalContactEmail?: string;
 };
 
+export type UpdateProposalRequest = {
+  title?: string;
+  description?: string;
+  submissionDate?: Date;
+  status?: string;
+  attachments?: Buffer;
+  optionalContactPhone?: string;
+  optionalContactPhoneIsWhats?: boolean;
+  optionalContactEmail?: string;
+};
+
 export type CreateProposalContract = {
   execute(data: CreateProposalRequest): Promise<ProposalResponse>;
+};
+
+export type UpdateProposalContract = {
+  execute(id: string, data: UpdateProposalRequest): Promise<ProposalResponse>;
 };
 
 export type ListProposalsQuery = {
@@ -79,6 +94,7 @@ export class ProposalController {
     private readonly createProposal: CreateProposalContract,
     private readonly listProposals: ListProposalsContract,
     private readonly listMyProposals: ListMyProposalsContract,
+    private readonly updateProposal?: UpdateProposalContract,
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
@@ -174,6 +190,80 @@ export class ProposalController {
         totalItems: proposals.totalItems,
         totalPages: proposals.totalPages,
       });
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<void> {
+    if (!this.updateProposal) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    const {
+      title,
+      description,
+      submissionDate,
+      status,
+      attachments,
+      optionalContactPhone,
+      optionalContactPhoneIsWhats,
+      optionalContactEmail,
+    } = req.body ?? {};
+
+    try {
+      const proposalId = req.params.id;
+
+      if (!proposalId) {
+        throw new InvalidProposalPayloadError("Proposal ID is required");
+      }
+
+      const updateData: UpdateProposalRequest = {};
+
+      if (title !== undefined) {
+        if (!title) throw new InvalidProposalPayloadError("Title cannot be empty");
+        updateData.title = title;
+      }
+
+      if (description !== undefined) {
+        if (!description) throw new InvalidProposalPayloadError("Description cannot be empty");
+        updateData.description = description;
+      }
+
+      if (submissionDate !== undefined) {
+        const parsedSubmissionDate = new Date(submissionDate);
+        if (Number.isNaN(parsedSubmissionDate.getTime())) {
+          throw new InvalidProposalPayloadError("Invalid submission date");
+        }
+        updateData.submissionDate = parsedSubmissionDate;
+      }
+
+      if (status !== undefined) {
+        if (!status) throw new InvalidProposalPayloadError("Status cannot be empty");
+        updateData.status = status;
+      }
+
+      if (attachments !== undefined) {
+        updateData.attachments = this.normalizeAttachments(attachments);
+      }
+
+      if (optionalContactPhone !== undefined) {
+        updateData.optionalContactPhone = optionalContactPhone;
+      }
+
+      if (optionalContactPhoneIsWhats !== undefined) {
+        updateData.optionalContactPhoneIsWhats = optionalContactPhoneIsWhats;
+      }
+
+      if (optionalContactEmail !== undefined) {
+        updateData.optionalContactEmail = optionalContactEmail;
+      }
+
+      const proposal = await this.updateProposal.execute(proposalId, updateData);
+      res.status(200).json(this.serializeProposal(proposal));
     } catch (error: unknown) {
       const statusCode = HttpErrorMapper.getStatusCode(error);
       const message = HttpErrorMapper.getMessage(error);

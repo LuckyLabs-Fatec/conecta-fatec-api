@@ -210,4 +210,96 @@ export const proposalPaths = {
       },
     },
   },
+  "/proposals/{id}": {
+    put: {
+      tags: ["Proposals"],
+      summary: "Atualiza uma proposta existente",
+      description: "Requer autenticação via JWT e perfil de comunidade (SOCIETY). Apenas o autor da proposta pode atualizá-la.",
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: {
+            type: "string",
+            format: "uuid",
+          },
+          description: "ID da proposta a ser atualizada",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/UpdateProposalRequest",
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Proposta atualizada com sucesso",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/CreateProposalResponse",
+              },
+            },
+          },
+        },
+        400: {
+          description: "Payload inválido ou ID de proposta ausente",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        401: {
+          description: "Usuário não autenticado ou token inválido",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        403: {
+          description: "Apenas usuários da comunidade podem atualizar propostas",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        404: {
+          description: "Proposta não encontrada",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        500: {
+          description: "Erro interno",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 } as const;

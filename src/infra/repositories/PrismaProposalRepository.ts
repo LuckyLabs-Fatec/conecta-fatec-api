@@ -2,6 +2,7 @@ import { Proposal } from "@/domain/models/Proposal";
 import { UserRole } from "@/domain/models/User";
 import {
   CreateProposalParams,
+  UpdateProposalParams,
   ListProposalsParams,
   ListUserProposalsParams,
   PaginatedProposals,
@@ -26,6 +27,24 @@ type PrismaClientLike = {
             id: string;
           };
         };
+      };
+      include: {
+        createdBy: true;
+      };
+    }): Promise<ProposalRecord>;
+    update(args: {
+      where: {
+        id: string;
+      };
+      data: {
+        title?: string;
+        description?: string;
+        submissionDate?: Date;
+        status?: string;
+        attachments?: Buffer;
+        optionalContactPhone?: string;
+        optionalContactPhoneIsWhats?: boolean;
+        optionalContactEmail?: string;
       };
       include: {
         createdBy: true;
@@ -116,6 +135,58 @@ export class PrismaProposalRepository implements ProposalRepository {
         name: createdProposal.createdBy.name ?? undefined,
         avatar: createdProposal.createdBy.avatar ?? undefined,
         role: createdProposal.createdBy.role,
+      },
+    };
+  }
+
+  async update(id: string, data: UpdateProposalParams): Promise<Proposal> {
+    const updateData: {
+      title?: string;
+      description?: string;
+      submissionDate?: Date;
+      status?: string;
+      attachments?: Buffer;
+      optionalContactPhone?: string;
+      optionalContactPhoneIsWhats?: boolean;
+      optionalContactEmail?: string;
+    } = {};
+
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.submissionDate !== undefined) updateData.submissionDate = data.submissionDate;
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.attachments !== undefined) updateData.attachments = data.attachments;
+    if (data.optionalContactPhone !== undefined)
+      updateData.optionalContactPhone = data.optionalContactPhone;
+    if (data.optionalContactPhoneIsWhats !== undefined)
+      updateData.optionalContactPhoneIsWhats = data.optionalContactPhoneIsWhats;
+    if (data.optionalContactEmail !== undefined)
+      updateData.optionalContactEmail = data.optionalContactEmail;
+
+    const updatedProposal = await this.db.proposal.update({
+      where: { id },
+      data: updateData,
+      include: {
+        createdBy: true,
+      },
+    });
+
+    return {
+      id: updatedProposal.id,
+      title: updatedProposal.title,
+      description: updatedProposal.description,
+      submissionDate: updatedProposal.submissionDate,
+      status: updatedProposal.status,
+      attachments: updatedProposal.attachments,
+      optionalContactPhone: updatedProposal.optionalContactPhone ?? undefined,
+      optionalContactPhoneIsWhats: updatedProposal.optionalContactPhoneIsWhats,
+      optionalContactEmail: updatedProposal.optionalContactEmail ?? undefined,
+      user: {
+        id: updatedProposal.createdBy.id,
+        email: updatedProposal.createdBy.email,
+        name: updatedProposal.createdBy.name ?? undefined,
+        avatar: updatedProposal.createdBy.avatar ?? undefined,
+        role: updatedProposal.createdBy.role,
       },
     };
   }
