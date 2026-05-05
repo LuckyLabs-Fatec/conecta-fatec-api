@@ -48,8 +48,8 @@ const users = [
 const proposals = [
   {
     id: "1f4d3c20-7f52-4c1f-b9ef-93cd5b8db001",
-    title: "Mobilidade Inteligente no Campus",
-    description: "Uma proposta para otimizar o transporte interno e a acessibilidade no campus.",
+    title: "Mobilidade Inteligente no Câmpus",
+    description: "Uma proposta para otimizar o transporte interno e a acessibilidade no câmpus.",
     submissionDate: new Date("2026-04-20T10:00:00.000Z"),
     status: "SUBMITTED",
     attachments: Buffer.from("plano-de-mobilidade-v1", "utf-8"),
@@ -97,7 +97,7 @@ const proposals = [
   {
     id: "f1a8d3e4-9c0b-4ad8-8c2e-7a3a0f6dd005",
     title: "Ponto de Apoio Psicológico Itinerante",
-    description: "Uma proposta para levar atendimento e orientação psicológica a diferentes espaços do campus.",
+    description: "Uma proposta para levar atendimento e orientação psicológica a diferentes espaços do câmpus.",
     submissionDate: new Date("2026-04-26T08:20:00.000Z"),
     status: "IN_REVIEW",
     attachments: Buffer.from("roteiro-apoio-psicologico", "utf-8"),
@@ -109,7 +109,7 @@ const proposals = [
   {
     id: "a7b6c5d4-e3f2-4a19-b8c7-9d0e1f2a3b06",
     title: "Laboratório Aberto de Inovação",
-    description: "Uma proposta para abrir um espaço colaborativo voltado a prototipagem e soluções para a comunidade.",
+    description: "Uma proposta para abrir um espaço colaborativo voltado à prototipagem e a soluções para a comunidade.",
     submissionDate: new Date("2026-04-27T16:10:00.000Z"),
     status: "APPROVED",
     attachments: Buffer.from("laboratorio-aberto-inovacao", "utf-8"),
@@ -135,35 +135,35 @@ const proposals = [
 const courses = [
   {
     id: "e1111111-1111-4111-8111-111111111111",
-    name: "Systems Analysis",
-    description: "Technology projects connected to community needs.",
+    name: "Análise de Sistemas",
+    description: "Projetos de tecnologia conectados às necessidades da comunidade.",
   },
   {
     id: "e2222222-2222-4222-8222-222222222222",
-    name: "Business Management",
-    description: "Operational and social impact projects.",
+    name: "Gestão de Negócios",
+    description: "Projetos de impacto operacional e social.",
   },
 ];
 
 const projects = [
   {
     id: "f1111111-1111-4111-8111-111111111111",
-    title: "Campus Mobility Platform",
-    description: "Build a prototype to organize campus mobility requests.",
+    title: "Plataforma de Mobilidade do Câmpus",
+    description: "Construir um protótipo para organizar solicitações de mobilidade no câmpus.",
     deadline: new Date("2026-06-30T00:00:00.000Z"),
     status: "ACTIVE",
-    attachments: "mobility-project-brief",
+    attachments: "resumo-do-projeto-de-mobilidade",
     courseId: "e1111111-1111-4111-8111-111111111111",
     proposalId: "1f4d3c20-7f52-4c1f-b9ef-93cd5b8db001",
     selectedFeedbackId: "a1111111-1111-4111-8111-111111111111",
   },
   {
     id: "f2222222-2222-4222-8222-222222222222",
-    title: "Community Recycling Workflow",
-    description: "Define a recycling workflow with partner cooperatives.",
+    title: "Fluxo Comunitário de Reciclagem",
+    description: "Definir um fluxo de reciclagem com cooperativas parceiras.",
     deadline: new Date("2026-07-15T00:00:00.000Z"),
     status: "PLANNING",
-    attachments: "recycling-project-brief",
+    attachments: "resumo-do-projeto-de-reciclagem",
     courseId: "e2222222-2222-4222-8222-222222222222",
     proposalId: "4ac2a8f0-6e35-4c6b-8a44-c1e8a954b002",
     selectedFeedbackId: "a2222222-2222-4222-8222-222222222222",
@@ -173,15 +173,15 @@ const projects = [
 const feedbacks = [
   {
     id: "a1111111-1111-4111-8111-111111111111",
-    comment: "Prioritize accessible routes and peak class hours.",
-    attachments: "mobility-feedback-notes",
+    comment: "Priorizar rotas acessíveis e os horários de pico das aulas.",
+    attachments: "anotacoes-de-feedback-de-mobilidade",
     userId: "d2222222-2222-4222-8222-222222222222",
     projectId: "f1111111-1111-4111-8111-111111111111",
   },
   {
     id: "a2222222-2222-4222-8222-222222222222",
-    comment: "Map collection points before implementation.",
-    attachments: "recycling-feedback-notes",
+    comment: "Mapear os pontos de coleta antes da implementação.",
+    attachments: "anotacoes-de-feedback-de-reciclagem",
     userId: "d1111111-1111-4111-8111-111111111111",
     projectId: "f2222222-2222-4222-8222-222222222222",
   },
@@ -203,12 +203,12 @@ const projectStudents = [
 const notifications = [
   {
     id: "c1111111-1111-4111-8111-111111111111",
-    message: "Your proposal was received.",
+    message: "Sua proposta foi recebida.",
     userId: "d1111111-1111-4111-8111-111111111111",
   },
   {
     id: "c2222222-2222-4222-8222-222222222222",
-    message: "A project received new feedback.",
+    message: "Um projeto recebeu novo feedback.",
     userId: "d3333333-3333-4333-8333-333333333333",
   },
 ];
@@ -377,7 +377,7 @@ async function main() {
   }
 
   console.log(
-    `Seed completed: ${users.length} users, ${proposals.length} proposals, ${courses.length} courses, ${projects.length} projects, ${feedbacks.length} feedbacks, ${projectStudents.length} project students, and ${notifications.length} notifications inserted/updated.`,
+    `Seed concluído: ${users.length} usuários, ${proposals.length} propostas, ${courses.length} cursos, ${projects.length} projetos, ${feedbacks.length} feedbacks, ${projectStudents.length} estudantes de projeto e ${notifications.length} notificações inseridos/atualizados.`,
   );
 }
 
