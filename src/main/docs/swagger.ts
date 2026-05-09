@@ -15,6 +15,7 @@ const swaggerDocument = {
     { name: "Feedbacks", description: "Gerenciamento de feedbacks" },
     { name: "Notifications", description: "Gerenciamento de notificações" },
     { name: "Project Students", description: "Gerenciamento de alunos em projetos" },
+    { name: "Mediator", description: "Endpoints para integração com API de mediador" },
   ],
   components: {
     securitySchemes: {
@@ -22,6 +23,12 @@ const swaggerDocument = {
         type: "http",
         scheme: "bearer",
         bearerFormat: "JWT",
+      },
+      adminApiKey: {
+        type: "apiKey",
+        in: "header",
+        name: "x-admin-secret",
+        description: "Admin secret header to protect admin-only routes",
       },
     },
     schemas: {
