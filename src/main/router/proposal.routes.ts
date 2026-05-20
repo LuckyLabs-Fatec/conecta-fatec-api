@@ -1,19 +1,20 @@
 import { Router } from "express";
 
+import { UserRole } from "@/domain/models/User";
 import { makeProposalController } from "@/main/factories/makeProposalController";
-import { ensureAuthenticatedCommunityUser } from "@/main/middlewares/ensureAuthenticatedCommunityUser";
+import { ensureAuthenticated, ensureRole } from "@/main/middlewares/auth";
 
 const proposalRoutes = Router();
 const proposalController = makeProposalController();
 
-proposalRoutes.post("/", ensureAuthenticatedCommunityUser, (req, res) =>
+proposalRoutes.post("/", ensureAuthenticated, (req, res) =>
 	proposalController.create(req, res),
 );
-proposalRoutes.get("/", (req, res) => proposalController.list(req, res));
-proposalRoutes.get("/mine", ensureAuthenticatedCommunityUser, (req, res) =>
+proposalRoutes.get("/", ensureRole(UserRole.STUDENT), (req, res) => proposalController.list(req, res));
+proposalRoutes.get("/mine", ensureAuthenticated, (req, res) =>
 	proposalController.listMine(req, res),
 );
-proposalRoutes.put("/:id", ensureAuthenticatedCommunityUser, (req, res) =>
+proposalRoutes.put("/:id", ensureAuthenticated, (req, res) =>
 	proposalController.update(req, res),
 );
 

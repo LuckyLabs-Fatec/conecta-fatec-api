@@ -17,6 +17,8 @@ export const feedbackPaths = {
     post: {
       tags: ["Feedbacks"],
       summary: "Cria feedback",
+      description: "Requer autenticação via JWT e role mínima STUDENT.",
+      security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
         content: {

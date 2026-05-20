@@ -17,6 +17,8 @@ export const notificationPaths = {
     post: {
       tags: ["Notifications"],
       summary: "Cria notificação",
+      description: "Requer autenticação via JWT e role mínima MEDIATOR.",
+      security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
         content: {

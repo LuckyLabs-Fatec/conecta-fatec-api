@@ -3,6 +3,8 @@ export const projectPaths = {
     get: {
       tags: ["Projects"],
       summary: "Lista projetos",
+      description: "Requer autenticação via JWT e role mínima STUDENT.",
+      security: [{ bearerAuth: [] }],
       responses: {
         200: {
           description: "Lista de projetos",
@@ -17,6 +19,8 @@ export const projectPaths = {
     post: {
       tags: ["Projects"],
       summary: "Cria projeto",
+      description: "Requer autenticação via JWT e role mínima MEDIATOR.",
+      security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
         content: {

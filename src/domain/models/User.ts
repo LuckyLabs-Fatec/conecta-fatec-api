@@ -2,6 +2,7 @@ export enum UserRole {
   SOCIETY = 'SOCIETY',
   MEDIATOR = 'MEDIATOR',
   STUDENT = 'STUDENT',
+  ADMIN = 'ADMIN',
 }
 
 export interface User {

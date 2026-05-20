@@ -1,0 +1,1 @@
+ALTER TYPE "user_roles" ADD VALUE 'ADMIN';

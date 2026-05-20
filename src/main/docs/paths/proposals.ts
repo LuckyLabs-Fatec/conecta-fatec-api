@@ -3,6 +3,8 @@ export const proposalPaths = {
     get: {
       tags: ["Proposals"],
       summary: "Lista todas as propostas",
+      description: "Requer autenticação via JWT e role mínima STUDENT.",
+      security: [{ bearerAuth: [] }],
       parameters: [
         {
           name: "page",
@@ -47,6 +49,26 @@ export const proposalPaths = {
             },
           },
         },
+        401: {
+          description: "Usuário não autenticado ou token inválido",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        403: {
+          description: "Usuário autenticado sem role mínima STUDENT",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
         500: {
           description: "Erro interno",
           content: {
@@ -62,7 +84,7 @@ export const proposalPaths = {
     post: {
       tags: ["Proposals"],
       summary: "Cria uma nova proposta",
-      description: "Requer autenticação via JWT e perfil de comunidade (SOCIETY).",
+      description: "Requer autenticação via JWT, sem role mínima.",
       security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
@@ -105,16 +127,6 @@ export const proposalPaths = {
             },
           },
         },
-        403: {
-          description: "Apenas usuários da comunidade podem postar propostas",
-          content: {
-            "application/json": {
-              schema: {
-                $ref: "#/components/schemas/ErrorResponse",
-              },
-            },
-          },
-        },
         500: {
           description: "Erro interno",
           content: {
@@ -132,6 +144,7 @@ export const proposalPaths = {
     get: {
       tags: ["Proposals"],
       summary: "Lista as propostas do usuário autenticado",
+      description: "Requer autenticação via JWT, sem role mínima.",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -187,16 +200,6 @@ export const proposalPaths = {
             },
           },
         },
-        403: {
-          description: "Usuário autenticado sem permissão de comunidade",
-          content: {
-            "application/json": {
-              schema: {
-                $ref: "#/components/schemas/ErrorResponse",
-              },
-            },
-          },
-        },
         500: {
           description: "Erro interno",
           content: {
@@ -214,7 +217,7 @@ export const proposalPaths = {
     put: {
       tags: ["Proposals"],
       summary: "Atualiza uma proposta existente",
-      description: "Requer autenticação via JWT e perfil de comunidade (SOCIETY). Apenas o autor da proposta pode atualizá-la.",
+      description: "Requer autenticação via JWT, sem role mínima.",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -261,16 +264,6 @@ export const proposalPaths = {
         },
         401: {
           description: "Usuário não autenticado ou token inválido",
-          content: {
-            "application/json": {
-              schema: {
-                $ref: "#/components/schemas/ErrorResponse",
-              },
-            },
-          },
-        },
-        403: {
-          description: "Apenas usuários da comunidade podem atualizar propostas",
           content: {
             "application/json": {
               schema: {

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 
 import { InvalidPayloadError } from "@/domain/errors/InvalidPayloadError";
-import { PublicUser } from "@/domain/models/User";
+import { PublicUser, UserRole } from "@/domain/models/User";
+import { getAuthenticatedUser } from "@/presentation/http/AuthenticatedRequest";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
 export type AuthenticateUserResponse = {
@@ -109,6 +110,11 @@ export class AuthController {
     }
 
     try {
+      if (mode === "partial" && !this.canPatchUser(req)) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
       if (mode === "full") {
         this.ensureFullUpdatePayload(req.body);
       }
@@ -134,5 +140,15 @@ export class AuthController {
   private getIdParam(req: Request): string {
     const idParam = req.params.id;
     return Array.isArray(idParam) ? idParam[0] : idParam;
+  }
+
+  private canPatchUser(req: Request): boolean {
+    const authenticatedUser = getAuthenticatedUser(req);
+
+    if (!authenticatedUser) {
+      return false;
+    }
+
+    return authenticatedUser.userId === this.getIdParam(req) || authenticatedUser.role === UserRole.ADMIN;
   }
 }

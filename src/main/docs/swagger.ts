@@ -24,12 +24,6 @@ const swaggerDocument = {
         scheme: "bearer",
         bearerFormat: "JWT",
       },
-      adminApiKey: {
-        type: "apiKey",
-        in: "header",
-        name: "x-admin-secret",
-        description: "Admin secret header to protect admin-only routes",
-      },
     },
     schemas: {
       ErrorResponse: {
@@ -105,7 +99,7 @@ const swaggerDocument = {
           },
           role: {
             type: "string",
-            enum: ["SOCIETY", "MEDIATOR", "STUDENT"],
+            enum: ["SOCIETY", "MEDIATOR", "STUDENT", "ADMIN"],
             example: "SOCIETY",
           },
         },
@@ -366,7 +360,7 @@ const swaggerDocument = {
           },
           role: {
             type: "string",
-            enum: ["SOCIETY", "MEDIATOR", "STUDENT"],
+            enum: ["SOCIETY", "MEDIATOR", "STUDENT", "ADMIN"],
             example: "SOCIETY",
           },
         },
