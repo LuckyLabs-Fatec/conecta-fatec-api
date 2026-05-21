@@ -46,6 +46,28 @@ const users = [
     role: "STUDENT",
     active: true,
   },
+  {
+    id: "d4444444-4444-4444-8444-444444444444",
+    email: "lucas@admin.com",
+    password: "luckylabs2026",
+    name: "Lucas Administrador",
+    avatar: null,
+    phone: "11666666666",
+    phoneIsWhats: false,
+    role: "ADMIN",
+    active: true,
+  },
+  {
+    id: "d5555555-5555-4555-8555-555555555555",
+    email: "gustavo@admin.com",
+    password: "luckylabs2026",
+    name: "Gustavo Administrador",
+    avatar: null,
+    phone: "11666666666",
+    phoneIsWhats: false,
+    role: "ADMIN",
+    active: true,
+  },
 ];
 
 const proposals = [

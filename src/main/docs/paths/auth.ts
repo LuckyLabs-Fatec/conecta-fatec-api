@@ -99,7 +99,8 @@ export const authPaths = {
     put: {
       tags: ["Auth"],
       summary: "Substitui o cadastro completo de um usuário",
-      description: "Exige todos os campos do cadastro no corpo da requisição.",
+      description: "Requer autenticação via JWT e role ADMIN. Exige todos os campos do cadastro no corpo da requisição.",
+      security: [{ bearerAuth: [] }],
       parameters: [
         {
           name: "id",
@@ -142,6 +143,26 @@ export const authPaths = {
             },
           },
         },
+        401: {
+          description: "Usuário não autenticado ou token inválido",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        403: {
+          description: "Usuário autenticado sem role ADMIN",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
         500: {
           description: "Erro interno",
           content: {
@@ -157,7 +178,8 @@ export const authPaths = {
     patch: {
       tags: ["Auth"],
       summary: "Atualiza parcialmente o cadastro de um usuário",
-      description: "Altera apenas os campos presentes no corpo da requisição.",
+      description: "Requer autenticação via JWT. Usuários podem alterar o próprio cadastro; ADMIN pode alterar outros usuários.",
+      security: [{ bearerAuth: [] }],
       parameters: [
         {
           name: "id",
@@ -190,6 +212,26 @@ export const authPaths = {
             },
           },
         },
+        401: {
+          description: "Usuário não autenticado ou token inválido",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        403: {
+          description: "Usuário autenticado tentando alterar outro cadastro sem role ADMIN",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
         500: {
           description: "Erro interno",
           content: {
@@ -205,7 +247,8 @@ export const authPaths = {
     delete: {
       tags: ["Auth"],
       summary: "Desativa o cadastro de um usuário",
-      description: "Realiza soft delete do cadastro marcando o usuário como inativo.",
+      description: "Requer autenticação via JWT e role ADMIN. Realiza soft delete do cadastro marcando o usuário como inativo.",
+      security: [{ bearerAuth: [] }],
       parameters: [
         {
           name: "id",
@@ -220,6 +263,26 @@ export const authPaths = {
       responses: {
         204: {
           description: "Cadastro desativado",
+        },
+        401: {
+          description: "Usuário não autenticado ou token inválido",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
+        },
+        403: {
+          description: "Usuário autenticado sem role ADMIN",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+            },
+          },
         },
         500: {
           description: "Erro interno",

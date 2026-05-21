@@ -273,6 +273,10 @@ describe("AuthController", () => {
         const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
 
         const req = {
+            auth: {
+                userId,
+                role: UserRole.STUDENT,
+            },
             params: { id: userId },
             body: {
                 phone: updatedUser.phone,
@@ -292,12 +296,77 @@ describe("AuthController", () => {
         expect(res.json).toHaveBeenCalledWith(updatedUser);
     });
 
+    it("should return 403 when a non-admin user tries to patch another user", async () => {
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            auth: {
+                userId: "authenticated-user-id",
+                role: UserRole.STUDENT,
+            },
+            params: { id: "other-user-id" },
+            body: {
+                name: faker.person.fullName(),
+            },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.patch(req, res);
+
+        expect(updateUserMock.execute).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(res.json).toHaveBeenCalledWith({ message: "Forbidden" });
+    });
+
+    it("should allow an admin user to patch another user", async () => {
+        const updatedUser = {
+            id: "other-user-id",
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+            avatar: faker.image.avatar(),
+            phone: "11999999999",
+            phoneIsWhats: true,
+        };
+        vi.mocked(updateUserMock.execute).mockResolvedValue(updatedUser);
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            auth: {
+                userId: "admin-user-id",
+                role: UserRole.ADMIN,
+            },
+            params: { id: updatedUser.id },
+            body: {
+                name: updatedUser.name,
+            },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.patch(req, res);
+
+        expect(updateUserMock.execute).toHaveBeenCalledWith(updatedUser.id, req.body, "partial");
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(updatedUser);
+    });
+
     it("should return mapped error when partial register update fails", async () => {
         vi.mocked(updateUserMock.execute).mockRejectedValue(new Error());
         const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
 
         const req = {
-            params: { id: faker.string.uuid() },
+            auth: {
+                userId: "user-id",
+                role: UserRole.STUDENT,
+            },
+            params: { id: "user-id" },
             body: {
                 name: faker.person.fullName(),
             },

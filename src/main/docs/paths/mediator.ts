@@ -3,7 +3,7 @@ export const mediatorPaths = {
     post: {
       tags: ["Mediator"],
       summary: "Configure mediator API URL (admin only)",
-      security: [{ adminApiKey: [] }],
+      security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
         content: {
@@ -27,7 +27,7 @@ export const mediatorPaths = {
           description: "Invalid payload",
           content: { "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } } },
         },
-        "401": { description: "Admin authentication required" },
+        "401": { description: "Authentication required" },
         "403": { description: "Forbidden" },
         "500": {
           description: "Server error",
@@ -41,6 +41,7 @@ export const mediatorPaths = {
     post: {
       tags: ["Mediator"],
       summary: "Proxy pre-approval request to configured mediator API",
+      security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
         content: { "application/json": { schema: { type: "object" } } },

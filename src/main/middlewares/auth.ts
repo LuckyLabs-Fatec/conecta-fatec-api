@@ -2,16 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import { JwtPayload, verify } from "jsonwebtoken";
 
 import { UserRole } from "@/domain/models/User";
+import { AuthenticatedRequest, getAuthenticatedUser } from "@/presentation/http/AuthenticatedRequest";
 
 type AuthTokenPayload = JwtPayload & {
   role?: UserRole;
 };
 
-export function ensureAuthenticatedCommunityUser(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
+const roleLevels: Record<UserRole, number> = {
+  [UserRole.SOCIETY]: 0,
+  [UserRole.STUDENT]: 1,
+  [UserRole.MEDIATOR]: 2,
+  [UserRole.ADMIN]: 3,
+};
+
+export function ensureAuthenticated(req: Request, res: Response, next: NextFunction): void {
   const authorizationHeader = req.headers.authorization;
 
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
@@ -43,23 +47,37 @@ export function ensureAuthenticatedCommunityUser(
 
     const payload = decodedToken as AuthTokenPayload;
 
-    if (payload.role !== UserRole.SOCIETY) {
-      res.status(403).json({ message: "Only community users can create proposals" });
-      return;
-    }
-
-    if (typeof payload.sub !== "string" || !payload.sub) {
+    if (typeof payload.sub !== "string" || !payload.sub || !isUserRole(payload.role)) {
       res.status(401).json({ message: "Invalid or expired token" });
       return;
     }
 
-    req.body = {
-      ...(req.body ?? {}),
-      createdByUserId: payload.sub,
+    (req as AuthenticatedRequest).auth = {
+      userId: payload.sub,
+      role: payload.role,
     };
 
     next();
   } catch {
     res.status(401).json({ message: "Invalid or expired token" });
   }
+}
+
+export function ensureRole(requiredRole: UserRole) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    ensureAuthenticated(req, res, () => {
+      const authenticatedUser = getAuthenticatedUser(req);
+
+      if (!authenticatedUser || roleLevels[authenticatedUser.role] < roleLevels[requiredRole]) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      next();
+    });
+  };
+}
+
+function isUserRole(role: unknown): role is UserRole {
+  return typeof role === "string" && Object.values(UserRole).includes(role as UserRole);
 }

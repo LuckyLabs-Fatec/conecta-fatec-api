@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
 import { UserRole } from "@/domain/models/User";
+import { getAuthenticatedUser } from "@/presentation/http/AuthenticatedRequest";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
 export type ProposalAuthorResponse = {
@@ -109,6 +110,7 @@ export class ProposalController {
       optionalContactPhoneIsWhats,
       optionalContactEmail,
     } = req.body ?? {};
+    const authenticatedUserId = getAuthenticatedUser(req)?.userId;
 
     try {
       this.validateRequiredFields({
@@ -117,7 +119,7 @@ export class ProposalController {
         submissionDate,
         status,
         attachments,
-        createdByUserId,
+        createdByUserId: authenticatedUserId ?? createdByUserId,
       });
 
       const parsedSubmissionDate = new Date(submissionDate);
@@ -134,7 +136,7 @@ export class ProposalController {
         submissionDate: parsedSubmissionDate,
         status,
         attachments: normalizedAttachments,
-        createdByUserId,
+        createdByUserId: authenticatedUserId ?? createdByUserId,
         optionalContactPhone,
         optionalContactPhoneIsWhats,
         optionalContactEmail,
@@ -170,7 +172,7 @@ export class ProposalController {
   async listMine(req: Request, res: Response): Promise<void> {
     try {
       const { page, limit } = this.parsePaginationQuery(req.query);
-      const createdByUserId = req.body?.createdByUserId;
+      const createdByUserId = getAuthenticatedUser(req)?.userId ?? req.body?.createdByUserId;
 
       if (!createdByUserId) {
         res.status(401).json({ message: "Authentication required" });
