@@ -372,7 +372,7 @@ export class ProposalController {
       description: proposal.description,
       submissionDate: proposal.submissionDate,
       status: proposal.status,
-      attachments: proposal.attachments.toString("base64"),
+      attachments: Buffer.from(proposal.attachments).toString("base64"),
       optionalContactPhone: proposal.optionalContactPhone,
       optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
       optionalContactEmail: proposal.optionalContactEmail,

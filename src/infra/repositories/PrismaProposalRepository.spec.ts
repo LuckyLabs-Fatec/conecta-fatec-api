@@ -179,6 +179,9 @@ describe("PrismaProposalRepository", () => {
       orderBy: {
         submissionDate: "desc",
       },
+      where: {
+        active: true,
+      },
       include: {
         createdBy: true,
       },
@@ -317,6 +320,7 @@ describe("PrismaProposalRepository", () => {
     expect(count).toHaveBeenCalledWith({
       where: {
         createdByUserId: "society-user-id",
+        active: true,
       },
     });
     expect(findMany).toHaveBeenCalledWith({
@@ -327,6 +331,7 @@ describe("PrismaProposalRepository", () => {
       },
       where: {
         createdByUserId: "society-user-id",
+        active: true,
       },
       include: {
         createdBy: true,

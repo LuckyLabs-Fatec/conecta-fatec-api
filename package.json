@@ -7,7 +7,9 @@
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/main/index.ts",
     "build": "prisma generate && tsc && tsc-alias",
     "start": "prisma migrate deploy && prisma db seed && node dist/main/index.js",
-    "test": "vitest run",
+    "test": "vitest run --exclude src/main/router/routes.integration.spec.ts",
+    "test:integration": "vitest run src/main/router/routes.integration.spec.ts",
+    "test:docker": "docker compose -f docker-compose.test.yml up -d --wait test-db && DATABASE_URL=postgresql://postgres:postgres@localhost:55432/conecta_fatec_test DIRECT_URL=postgresql://postgres:postgres@localhost:55432/conecta_fatec_test PRISMA_DRIVER_ADAPTER=pg JWT_SECRET=test-secret JWT_EXPIRES_IN=1h CORS_ORIGIN=http://localhost:3000 pnpm prisma migrate deploy && DATABASE_URL=postgresql://postgres:postgres@localhost:55432/conecta_fatec_test DIRECT_URL=postgresql://postgres:postgres@localhost:55432/conecta_fatec_test PRISMA_DRIVER_ADAPTER=pg JWT_SECRET=test-secret JWT_EXPIRES_IN=1h CORS_ORIGIN=http://localhost:3000 pnpm run test:integration",
     "test:watch": "vitest",
     "test:coverage": "vitest --run --coverage",
     "lint": "eslint src --ext .ts",
@@ -24,6 +26,7 @@
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
     "@prisma/adapter-neon": "^7.7.0",
+    "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",

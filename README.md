@@ -92,6 +92,9 @@ Documentação da API disponível localmente em:
 
 - Node.js 22
 - pnpm
+- Docker com Docker Compose v2, necessário para os testes de integração das rotas
+- Permissão para acessar o Docker daemon local
+- Porta `55432` livre para o PostgreSQL de teste
 
 ### 📦 Instalação
 
@@ -150,6 +153,16 @@ pnpm run build
 ```bash
 pnpm run test
 ```
+
+Para rodar os testes de integração das rotas com um banco PostgreSQL em Docker:
+
+```bash
+pnpm run test:docker
+```
+
+Esse comando sobe o serviço `test-db` definido em `docker-compose.test.yml`, usando a imagem
+`postgres:16-alpine`, aplica as migrations do Prisma no banco `conecta_fatec_test` e executa
+`src/main/router/routes.integration.spec.ts`.
 
 ### 🐞 Debug
 
