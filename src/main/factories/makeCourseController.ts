@@ -11,5 +11,11 @@ export function makeCourseController(): CourseController {
     {
       execute: (params) => courseRepository.findPaginated(params),
     },
+    {
+      execute: (id, data) => courseRepository.update(id, data),
+    },
+    {
+      execute: (id) => courseRepository.delete(id),
+    },
   );
 }

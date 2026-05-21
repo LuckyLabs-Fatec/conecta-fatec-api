@@ -156,6 +156,7 @@ describe("ProposalController", () => {
       optionalContactPhone: "11999999999",
       optionalContactPhoneIsWhats: true,
       optionalContactEmail: "proposal-contact@example.com",
+      active: true,
       user: {
         id: faker.string.uuid(),
         email: faker.internet.email(),
@@ -228,6 +229,7 @@ describe("ProposalController", () => {
       status: "SUBMITTED",
       attachments,
       optionalContactPhoneIsWhats: false,
+      active: true,
       user: {
         id: faker.string.uuid(),
         email: faker.internet.email(),
@@ -311,6 +313,7 @@ describe("ProposalController", () => {
           optionalContactPhone: "11888888888",
           optionalContactPhoneIsWhats: false,
           optionalContactEmail: undefined,
+          active: true,
           user: {
             id: faker.string.uuid(),
             email: faker.internet.email(),
@@ -329,6 +332,7 @@ describe("ProposalController", () => {
           optionalContactPhone: undefined,
           optionalContactPhoneIsWhats: true,
           optionalContactEmail: "second-contact@example.com",
+          active: true,
           user: {
             id: faker.string.uuid(),
             email: faker.internet.email(),
@@ -489,6 +493,7 @@ describe("ProposalController", () => {
           optionalContactPhone: "11999999999",
           optionalContactPhoneIsWhats: true,
           optionalContactEmail: "mine-contact@example.com",
+          active: true,
           user: {
             id: faker.string.uuid(),
             email: faker.internet.email(),

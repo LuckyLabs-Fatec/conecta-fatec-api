@@ -23,6 +23,7 @@ export type ProposalResponse = {
   optionalContactPhone?: string;
   optionalContactPhoneIsWhats: boolean;
   optionalContactEmail?: string;
+  active: boolean;
   user: ProposalAuthorResponse;
 };
 
@@ -55,6 +56,10 @@ export type CreateProposalContract = {
 
 export type UpdateProposalContract = {
   execute(id: string, data: UpdateProposalRequest): Promise<ProposalResponse>;
+};
+
+export type DeleteProposalContract = {
+  execute(id: string): Promise<void>;
 };
 
 export type ListProposalsQuery = {
@@ -96,6 +101,7 @@ export class ProposalController {
     private readonly listProposals: ListProposalsContract,
     private readonly listMyProposals: ListMyProposalsContract,
     private readonly updateProposal?: UpdateProposalContract,
+    private readonly deleteProposal?: DeleteProposalContract,
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
@@ -273,6 +279,28 @@ export class ProposalController {
     }
   }
 
+  async delete(req: Request, res: Response): Promise<void> {
+    if (!this.deleteProposal) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    try {
+      const proposalId = this.getIdParam(req);
+
+      if (!proposalId) {
+        throw new InvalidProposalPayloadError("Proposal ID is required");
+      }
+
+      await this.deleteProposal.execute(proposalId);
+      res.status(204).send();
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
   private validateRequiredFields(fields: {
     title?: unknown;
     description?: unknown;
@@ -348,6 +376,7 @@ export class ProposalController {
       optionalContactPhone: proposal.optionalContactPhone,
       optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
       optionalContactEmail: proposal.optionalContactEmail,
+      active: proposal.active,
       user: proposal.user,
     };
   }

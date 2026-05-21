@@ -128,6 +128,17 @@ O servidor estará rodando em:
 http://localhost:8080
 ```
 
+### 👤 Usuários de Teste
+
+Após executar o seed do Prisma, utilize os usuários abaixo para testar cada perfil de acesso:
+
+| Role | E-mail | Senha |
+| --- | --- | --- |
+| SOCIETY | society@example.com | society123 |
+| MEDIATOR | mediator@example.com | mediator123 |
+| STUDENT | student@example.com | student123 |
+| ADMIN | lucas@admin.com | luckylabs2026 |
+
 ### 🏗️ Build
 
 ```bash

@@ -46,6 +46,7 @@ model Proposal {
   optionalContactPhoneIsWhats Boolean   @default(false) @map("telefone_contato_opcional_is_whats")
   optionalContactEmail        String?   @map("email_contato_opcional") @db.VarChar(100)
   createdByUserId             String    @map("created_by_user_id") @db.Uuid
+  active                      Boolean   @default(true) @map("active")
   createdBy                   User      @relation(fields: [createdByUserId], references: [id])
   projects                    Project[]
   createdAt                   DateTime  @default(now()) @map("created_at")
@@ -57,6 +58,7 @@ model Proposal {
 model Notification {
   id        String   @id @default(uuid()) @map("id") @db.Uuid
   message   String   @map("message") @db.Text
+  active    Boolean  @default(true) @map("active")
   createdAt DateTime @default(now()) @map("created_at")
   userId    String   @map("user_id") @db.Uuid
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -68,6 +70,7 @@ model Course {
   id          String    @id @default(uuid()) @map("id") @db.Uuid
   name        String    @map("name") @db.VarChar(60)
   description String?   @map("description") @db.Text
+  active      Boolean   @default(true) @map("active")
   projects    Project[]
 
   @@map("courses")
@@ -80,6 +83,7 @@ model Project {
   deadline           DateTime?        @map("deadline")
   status             String           @map("status") @db.VarChar(50)
   attachments        String?          @map("attachments") @db.Text
+  active             Boolean          @default(true) @map("active")
   courseId           String           @map("course_id") @db.Uuid
   proposalId         String           @map("proposal_id") @db.Uuid
   selectedFeedbackId String?          @map("selected_feedback_id") @db.Uuid
@@ -96,6 +100,7 @@ model Feedback {
   id                 String    @id @default(uuid()) @map("id") @db.Uuid
   comment            String?   @map("comment") @db.Text
   attachments        String?   @map("attachments") @db.Text
+  active             Boolean   @default(true) @map("active")
   createdAt          DateTime  @default(now()) @map("created_at")
   userId             String    @map("user_id") @db.Uuid
   projectId          String    @map("project_id") @db.Uuid
@@ -110,6 +115,7 @@ model ProjectStudent {
   id        String  @id @default(uuid()) @map("id") @db.Uuid
   projectId String  @map("project_id") @db.Uuid
   userId    String  @map("user_id") @db.Uuid
+  active    Boolean @default(true) @map("active")
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 

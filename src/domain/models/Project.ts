@@ -5,6 +5,7 @@ export interface Project {
   deadline?: Date;
   status: string;
   attachments?: string;
+  active: boolean;
   courseId: string;
   proposalId: string;
   selectedFeedbackId?: string;

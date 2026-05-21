@@ -11,5 +11,11 @@ export function makeProjectStudentController(): ProjectStudentController {
     {
       execute: (params) => projectStudentRepository.findPaginated(params),
     },
+    {
+      execute: (id, data) => projectStudentRepository.update(id, data),
+    },
+    {
+      execute: (id) => projectStudentRepository.delete(id),
+    },
   );
 }

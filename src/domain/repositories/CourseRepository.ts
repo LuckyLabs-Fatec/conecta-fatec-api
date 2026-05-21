@@ -6,7 +6,14 @@ export type CreateCourseParams = {
   description?: string;
 };
 
+export type UpdateCourseParams = {
+  name?: string;
+  description?: string;
+};
+
 export interface CourseRepository {
   create(data: CreateCourseParams): Promise<Course>;
+  update(id: string, data: UpdateCourseParams): Promise<Course>;
+  delete(id: string): Promise<void>;
   findPaginated(params: ListParams): Promise<Paginated<Course>>;
 }
