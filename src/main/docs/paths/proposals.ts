@@ -294,5 +294,47 @@ export const proposalPaths = {
         },
       },
     },
+    delete: {
+      tags: ["Proposals"],
+      summary: "Remove uma proposta",
+      description: "Requer autenticação via JWT, sem role mínima.",
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+          description: "ID da proposta a ser removida",
+        },
+      ],
+      responses: {
+        204: { description: "Proposta removida com sucesso" },
+        401: {
+          description: "Usuário não autenticado ou token inválido",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        404: {
+          description: "Proposta não encontrada",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        500: {
+          description: "Erro interno",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+      },
+    },
   },
 } as const;
