@@ -9,5 +9,7 @@ const courseController = makeCourseController();
 
 courseRoutes.post("/", ensureRole(UserRole.MEDIATOR), (req, res) => courseController.create(req, res));
 courseRoutes.get("/", ensureRole(UserRole.STUDENT), (req, res) => courseController.list(req, res));
+courseRoutes.put("/:id", ensureRole(UserRole.MEDIATOR), (req, res) => courseController.update(req, res));
+courseRoutes.delete("/:id", ensureRole(UserRole.MEDIATOR), (req, res) => courseController.delete(req, res));
 
 export { courseRoutes };

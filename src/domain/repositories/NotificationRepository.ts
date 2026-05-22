@@ -6,7 +6,13 @@ export type CreateNotificationParams = {
   userId: string;
 };
 
+export type UpdateNotificationParams = {
+  message?: string;
+};
+
 export interface NotificationRepository {
   create(data: CreateNotificationParams): Promise<Notification>;
+  update(id: string, data: UpdateNotificationParams): Promise<Notification>;
+  delete(id: string): Promise<void>;
   findPaginated(params: ListParams): Promise<Paginated<Notification>>;
 }

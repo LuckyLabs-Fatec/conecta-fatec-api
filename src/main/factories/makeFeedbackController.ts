@@ -11,5 +11,11 @@ export function makeFeedbackController(): FeedbackController {
     {
       execute: (params) => feedbackRepository.findPaginated(params),
     },
+    {
+      execute: (id, data) => feedbackRepository.update(id, data),
+    },
+    {
+      execute: (id) => feedbackRepository.delete(id),
+    },
   );
 }

@@ -8,7 +8,14 @@ export type CreateFeedbackParams = {
   projectId: string;
 };
 
+export type UpdateFeedbackParams = {
+  comment?: string;
+  attachments?: string;
+};
+
 export interface FeedbackRepository {
   create(data: CreateFeedbackParams): Promise<Feedback>;
+  update(id: string, data: UpdateFeedbackParams): Promise<Feedback>;
+  delete(id: string): Promise<void>;
   findPaginated(params: ListParams): Promise<Paginated<Feedback>>;
 }

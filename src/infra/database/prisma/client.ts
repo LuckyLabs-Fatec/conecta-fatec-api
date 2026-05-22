@@ -1,4 +1,5 @@
 import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as {
@@ -12,7 +13,10 @@ function makePrismaClient() {
     throw new Error("DATABASE_URL is not defined");
   }
 
-  const adapter = new PrismaNeon({ connectionString });
+  const adapter = process.env.PRISMA_DRIVER_ADAPTER === "pg"
+    ? new PrismaPg({ connectionString })
+    : new PrismaNeon({ connectionString });
+
   return new PrismaClient({ adapter });
 }
 

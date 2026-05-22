@@ -45,6 +45,7 @@ type PrismaClientLike = {
         optionalContactPhone?: string;
         optionalContactPhoneIsWhats?: boolean;
         optionalContactEmail?: string;
+        active?: boolean;
       };
       include: {
         createdBy: true;
@@ -58,6 +59,7 @@ type PrismaClientLike = {
       };
       where?: {
         createdByUserId?: string;
+        active?: boolean;
       };
       include?: {
         createdBy?: true;
@@ -66,6 +68,7 @@ type PrismaClientLike = {
     count(args?: {
       where?: {
         createdByUserId?: string;
+        active?: boolean;
       };
     }): Promise<number>;
   };
@@ -89,6 +92,7 @@ type ProposalRecord = {
   optionalContactPhone: string | null;
   optionalContactPhoneIsWhats: boolean;
   optionalContactEmail: string | null;
+  active: boolean;
   createdBy: UserRecord;
 };
 
@@ -129,6 +133,7 @@ export class PrismaProposalRepository implements ProposalRepository {
       optionalContactPhone: createdProposal.optionalContactPhone ?? undefined,
       optionalContactPhoneIsWhats: createdProposal.optionalContactPhoneIsWhats,
       optionalContactEmail: createdProposal.optionalContactEmail ?? undefined,
+      active: createdProposal.active,
       user: {
         id: createdProposal.createdBy.id,
         email: createdProposal.createdBy.email,
@@ -181,6 +186,7 @@ export class PrismaProposalRepository implements ProposalRepository {
       optionalContactPhone: updatedProposal.optionalContactPhone ?? undefined,
       optionalContactPhoneIsWhats: updatedProposal.optionalContactPhoneIsWhats,
       optionalContactEmail: updatedProposal.optionalContactEmail ?? undefined,
+      active: updatedProposal.active,
       user: {
         id: updatedProposal.createdBy.id,
         email: updatedProposal.createdBy.email,
@@ -191,17 +197,27 @@ export class PrismaProposalRepository implements ProposalRepository {
     };
   }
 
+  async delete(id: string): Promise<void> {
+    await this.db.proposal.update({
+      where: { id },
+      data: { active: false },
+      include: { createdBy: true },
+    });
+  }
+
   async findPaginated(params: ListProposalsParams): Promise<PaginatedProposals> {
     const skip = (params.page - 1) * params.limit;
+    const where = { active: true };
 
     const [totalItems, proposals] = await Promise.all([
-      this.db.proposal.count(),
+      this.db.proposal.count({ where }),
       this.db.proposal.findMany({
         skip,
         take: params.limit,
         orderBy: {
           submissionDate: "desc",
         },
+        where,
         include: {
           createdBy: true,
         },
@@ -221,6 +237,7 @@ export class PrismaProposalRepository implements ProposalRepository {
         optionalContactPhone: proposal.optionalContactPhone ?? undefined,
         optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
         optionalContactEmail: proposal.optionalContactEmail ?? undefined,
+        active: proposal.active,
         user: {
           id: proposal.createdBy.id,
           email: proposal.createdBy.email,
@@ -240,6 +257,7 @@ export class PrismaProposalRepository implements ProposalRepository {
     const skip = (params.page - 1) * params.limit;
     const where = {
       createdByUserId: params.userId,
+      active: true,
     };
 
     const [totalItems, proposals] = await Promise.all([
@@ -270,6 +288,7 @@ export class PrismaProposalRepository implements ProposalRepository {
         optionalContactPhone: proposal.optionalContactPhone ?? undefined,
         optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
         optionalContactEmail: proposal.optionalContactEmail ?? undefined,
+        active: proposal.active,
         user: {
           id: proposal.createdBy.id,
           email: proposal.createdBy.email,

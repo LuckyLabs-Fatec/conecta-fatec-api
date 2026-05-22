@@ -1,0 +1,15 @@
+services:
+  test-db:
+    image: postgres:16-alpine
+    container_name: conecta-fatec-api-test-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: conecta_fatec_test
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d conecta_fatec_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
