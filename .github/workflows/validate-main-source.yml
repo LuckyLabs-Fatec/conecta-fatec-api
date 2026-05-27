@@ -1,19 +1,19 @@
-name: Validate main source branch
+name: Validate master source branch
 
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   validate-source-branch:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Allow only develop into main
+      - name: Allow only develop into master
         run: |
           if [ "${{ github.head_ref }}" != "develop" ]; then
-            echo "A branch main só pode receber PR vindo da develop."
+            echo "A branch master só pode receber PR vindo da develop."
             echo "Branch atual: ${{ github.head_ref }}"
             exit 1
           fi
