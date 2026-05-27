@@ -8,10 +8,11 @@ describe("PrismaCourseRepository", () => {
       id: "course-id",
       name: "Systems Analysis",
       description: "Technology projects",
+      active: true,
     });
 
     const sut = new PrismaCourseRepository({
-      course: { create, findMany: vi.fn(), count: vi.fn() },
+      course: { create, findMany: vi.fn(), count: vi.fn(), update: vi.fn() },
     });
 
     const course = await sut.create({
@@ -29,16 +30,17 @@ describe("PrismaCourseRepository", () => {
       id: "course-id",
       name: "Systems Analysis",
       description: "Technology projects",
+      active: true,
     });
   });
 
   it("should find paginated courses", async () => {
     const findMany = vi.fn().mockResolvedValue([
-      { id: "course-id", name: "Systems Analysis", description: null },
+      { id: "course-id", name: "Systems Analysis", description: null, active: true },
     ]);
 
     const sut = new PrismaCourseRepository({
-      course: { create: vi.fn(), findMany, count: vi.fn().mockResolvedValue(1) },
+      course: { create: vi.fn(), findMany, count: vi.fn().mockResolvedValue(1), update: vi.fn() },
     });
 
     const paginated = await sut.findPaginated({ page: 1, limit: 10 });
@@ -47,9 +49,10 @@ describe("PrismaCourseRepository", () => {
       skip: 0,
       take: 10,
       orderBy: { name: "asc" },
+      where: { active: true },
     });
     expect(paginated).toEqual({
-      items: [{ id: "course-id", name: "Systems Analysis", description: undefined }],
+      items: [{ id: "course-id", name: "Systems Analysis", description: undefined, active: true }],
       page: 1,
       limit: 10,
       totalItems: 1,

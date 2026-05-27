@@ -18,5 +18,6 @@ export interface Proposal {
   optionalContactPhone?: string;
   optionalContactPhoneIsWhats: boolean;
   optionalContactEmail?: string;
+  active: boolean;
   user: ProposalUser;
 }

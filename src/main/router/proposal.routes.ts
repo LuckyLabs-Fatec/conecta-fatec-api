@@ -17,5 +17,8 @@ proposalRoutes.get("/mine", ensureAuthenticated, (req, res) =>
 proposalRoutes.put("/:id", ensureAuthenticated, (req, res) =>
 	proposalController.update(req, res),
 );
+proposalRoutes.delete("/:id", ensureAuthenticated, (req, res) =>
+	proposalController.delete(req, res),
+);
 
 export { proposalRoutes };

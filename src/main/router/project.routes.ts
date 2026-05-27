@@ -9,5 +9,7 @@ const projectController = makeProjectController();
 
 projectRoutes.post("/", ensureRole(UserRole.MEDIATOR), (req, res) => projectController.create(req, res));
 projectRoutes.get("/", ensureRole(UserRole.STUDENT), (req, res) => projectController.list(req, res));
+projectRoutes.put("/:id", ensureRole(UserRole.MEDIATOR), (req, res) => projectController.update(req, res));
+projectRoutes.delete("/:id", ensureRole(UserRole.MEDIATOR), (req, res) => projectController.delete(req, res));
 
 export { projectRoutes };

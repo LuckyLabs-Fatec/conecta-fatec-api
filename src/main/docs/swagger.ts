@@ -523,6 +523,13 @@ const swaggerDocument = {
         },
         required: ["name"],
       },
+      UpdateCourseRequest: {
+        type: "object",
+        properties: {
+          name: { type: "string", example: "Systems Analysis" },
+          description: { type: "string", example: "Technology projects" },
+        },
+      },
       Project: {
         type: "object",
         properties: {
@@ -552,6 +559,19 @@ const swaggerDocument = {
         },
         required: ["title", "description", "status", "courseId", "proposalId"],
       },
+      UpdateProjectRequest: {
+        type: "object",
+        properties: {
+          title: { type: "string", example: "Campus Mobility Platform" },
+          description: { type: "string", example: "Build a prototype" },
+          deadline: { type: "string", format: "date-time" },
+          status: { type: "string", example: "ACTIVE" },
+          attachments: { type: "string", example: "brief" },
+          courseId: { type: "string", format: "uuid" },
+          proposalId: { type: "string", format: "uuid" },
+          selectedFeedbackId: { type: "string", format: "uuid" },
+        },
+      },
       Feedback: {
         type: "object",
         properties: {
@@ -574,6 +594,13 @@ const swaggerDocument = {
         },
         required: ["userId", "projectId"],
       },
+      UpdateFeedbackRequest: {
+        type: "object",
+        properties: {
+          comment: { type: "string" },
+          attachments: { type: "string" },
+        },
+      },
       Notification: {
         type: "object",
         properties: {
@@ -592,6 +619,12 @@ const swaggerDocument = {
         },
         required: ["message", "userId"],
       },
+      UpdateNotificationRequest: {
+        type: "object",
+        properties: {
+          message: { type: "string", example: "Your proposal was received." },
+        },
+      },
       ProjectStudent: {
         type: "object",
         properties: {
@@ -608,6 +641,13 @@ const swaggerDocument = {
           userId: { type: "string", format: "uuid" },
         },
         required: ["projectId", "userId"],
+      },
+      UpdateProjectStudentRequest: {
+        type: "object",
+        properties: {
+          projectId: { type: "string", format: "uuid" },
+          userId: { type: "string", format: "uuid" },
+        },
       },
       PaginatedResponse: {
         type: "object",

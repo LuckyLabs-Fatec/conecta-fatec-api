@@ -21,3 +21,5 @@ yarn-error.log*
 
 #Example files
 launch.json
+docs/
+AGENTS.md

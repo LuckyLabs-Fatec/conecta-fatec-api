@@ -12,13 +12,14 @@ describe("PrismaProjectRepository", () => {
       deadline,
       status: "ACTIVE",
       attachments: "brief",
+      active: true,
       courseId: "course-id",
       proposalId: "proposal-id",
       selectedFeedbackId: null,
     });
 
     const sut = new PrismaProjectRepository({
-      project: { create, findMany: vi.fn(), count: vi.fn() },
+      project: { create, findMany: vi.fn(), count: vi.fn(), update: vi.fn() },
     });
 
     const project = await sut.create({
@@ -49,6 +50,7 @@ describe("PrismaProjectRepository", () => {
       deadline,
       status: "ACTIVE",
       attachments: "brief",
+      active: true,
       courseId: "course-id",
       proposalId: "proposal-id",
       selectedFeedbackId: undefined,
@@ -64,13 +66,14 @@ describe("PrismaProjectRepository", () => {
       deadline,
       status: "ACTIVE",
       attachments: "brief",
+      active: true,
       courseId: "course-id",
       proposalId: "proposal-id",
       selectedFeedbackId: "feedback-id",
     });
 
     const sut = new PrismaProjectRepository({
-      project: { create, findMany: vi.fn(), count: vi.fn() },
+      project: { create, findMany: vi.fn(), count: vi.fn(), update: vi.fn() },
     });
 
     const project = await sut.create({
@@ -130,7 +133,7 @@ describe("PrismaProjectRepository", () => {
     const count = vi.fn().mockResolvedValue(2);
 
     const sut = new PrismaProjectRepository({
-      project: { create: vi.fn(), findMany, count },
+      project: { create: vi.fn(), findMany, count, update: vi.fn() },
     });
 
     const result = await sut.findPaginated({ page: 1, limit: 10 });
@@ -140,6 +143,7 @@ describe("PrismaProjectRepository", () => {
       skip: 0,
       take: 10,
       orderBy: { deadline: "desc" },
+      where: { active: true },
     });
     expect(result.items).toHaveLength(2);
     expect(result.page).toBe(1);
@@ -167,7 +171,7 @@ describe("PrismaProjectRepository", () => {
     const count = vi.fn().mockResolvedValue(15);
 
     const sut = new PrismaProjectRepository({
-      project: { create: vi.fn(), findMany, count },
+      project: { create: vi.fn(), findMany, count, update: vi.fn() },
     });
 
     const result = await sut.findPaginated({ page: 2, limit: 10 });
@@ -176,6 +180,7 @@ describe("PrismaProjectRepository", () => {
       skip: 10,
       take: 10,
       orderBy: { deadline: "desc" },
+      where: { active: true },
     });
     expect(result.items).toHaveLength(1);
     expect(result.page).toBe(2);
@@ -192,6 +197,7 @@ describe("PrismaProjectRepository", () => {
         deadline: null,
         status: "PENDING",
         attachments: null,
+        active: true,
         courseId: "course-id",
         proposalId: "proposal-id-4",
         selectedFeedbackId: null,
@@ -202,7 +208,7 @@ describe("PrismaProjectRepository", () => {
     const count = vi.fn().mockResolvedValue(1);
 
     const sut = new PrismaProjectRepository({
-      project: { create: vi.fn(), findMany, count },
+      project: { create: vi.fn(), findMany, count, update: vi.fn() },
     });
 
     const result = await sut.findPaginated({ page: 1, limit: 10 });
@@ -214,6 +220,7 @@ describe("PrismaProjectRepository", () => {
       deadline: undefined,
       status: "PENDING",
       attachments: undefined,
+      active: true,
       courseId: "course-id",
       proposalId: "proposal-id-4",
       selectedFeedbackId: undefined,

@@ -34,6 +34,7 @@ export function makeProposalController(): ProposalController {
           optionalContactPhone: createdProposal.optionalContactPhone,
           optionalContactPhoneIsWhats: createdProposal.optionalContactPhoneIsWhats,
           optionalContactEmail: createdProposal.optionalContactEmail,
+          active: createdProposal.active,
           user: createdProposal.user,
         };
       },
@@ -83,9 +84,13 @@ export function makeProposalController(): ProposalController {
           optionalContactPhone: updatedProposal.optionalContactPhone,
           optionalContactPhoneIsWhats: updatedProposal.optionalContactPhoneIsWhats,
           optionalContactEmail: updatedProposal.optionalContactEmail,
+          active: updatedProposal.active,
           user: updatedProposal.user,
         };
       },
+    },
+    {
+      execute: (id: string) => proposalRepository.delete(id),
     },
   );
 }

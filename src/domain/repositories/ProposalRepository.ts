@@ -43,6 +43,7 @@ export type PaginatedProposals = {
 export interface ProposalRepository {
   create(data: CreateProposalParams): Promise<Proposal>;
   update(id: string, data: UpdateProposalParams): Promise<Proposal>;
+  delete(id: string): Promise<void>;
   findPaginated(params: ListProposalsParams): Promise<PaginatedProposals>;
   findPaginatedByUser(params: ListUserProposalsParams): Promise<PaginatedProposals>;
 }

@@ -11,5 +11,11 @@ export function makeNotificationController(): NotificationController {
     {
       execute: (params) => notificationRepository.findPaginated(params),
     },
+    {
+      execute: (id, data) => notificationRepository.update(id, data),
+    },
+    {
+      execute: (id) => notificationRepository.delete(id),
+    },
   );
 }

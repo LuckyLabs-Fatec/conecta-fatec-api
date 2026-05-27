@@ -10,8 +10,21 @@ export type CreateProjectStudentRequest = {
   userId: string;
 };
 
+export type UpdateProjectStudentRequest = {
+  projectId?: string;
+  userId?: string;
+};
+
 type CreateProjectStudentContract = {
   execute(data: CreateProjectStudentRequest): Promise<ProjectStudent>;
+};
+
+type UpdateProjectStudentContract = {
+  execute(id: string, data: UpdateProjectStudentRequest): Promise<ProjectStudent>;
+};
+
+type DeleteProjectStudentContract = {
+  execute(id: string): Promise<void>;
 };
 
 type ListProjectStudentsContract = {
@@ -22,6 +35,8 @@ export class ProjectStudentController {
   constructor(
     private readonly createProjectStudent: CreateProjectStudentContract,
     private readonly listProjectStudents: ListProjectStudentsContract,
+    private readonly updateProjectStudent?: UpdateProjectStudentContract,
+    private readonly deleteProjectStudent?: DeleteProjectStudentContract,
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
@@ -31,6 +46,42 @@ export class ProjectStudentController {
 
       const projectStudent = await this.createProjectStudent.execute({ projectId, userId });
       res.status(201).json(projectStudent);
+    } catch (error: unknown) {
+      res.status(HttpErrorMapper.getStatusCode(error)).json({
+        message: HttpErrorMapper.getMessage(error),
+      });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<void> {
+    if (!this.updateProjectStudent) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    try {
+      const id = req.params.id as string;
+      const { projectId, userId } = req.body ?? {};
+
+      const projectStudent = await this.updateProjectStudent.execute(id, { projectId, userId });
+      res.status(200).json(projectStudent);
+    } catch (error: unknown) {
+      res.status(HttpErrorMapper.getStatusCode(error)).json({
+        message: HttpErrorMapper.getMessage(error),
+      });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<void> {
+    if (!this.deleteProjectStudent) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    try {
+      const id = req.params.id as string;
+      await this.deleteProjectStudent.execute(id);
+      res.status(204).send();
     } catch (error: unknown) {
       res.status(HttpErrorMapper.getStatusCode(error)).json({
         message: HttpErrorMapper.getMessage(error),
