@@ -6,6 +6,7 @@ import {
     AuthController,
     AuthenticateUserContract,
     DeleteUserContract,
+    ListUsersContract,
     UpdateUserContract,
     UpdateUserRequest,
 } from "./AuthController";
@@ -20,6 +21,7 @@ describe("AuthController", () => {
     let authenticateUserMock: AuthenticateUserContract;
     let updateUserMock: UpdateUserContract;
     let deleteUserMock: DeleteUserContract;
+    let listUsersMock: ListUsersContract;
 
     beforeEach(() => {
         authenticateUserMock = {
@@ -29,6 +31,9 @@ describe("AuthController", () => {
             execute: vi.fn(),
         };
         deleteUserMock = {
+            execute: vi.fn(),
+        };
+        listUsersMock = {
             execute: vi.fn(),
         };
 
@@ -207,6 +212,7 @@ describe("AuthController", () => {
             avatar: faker.image.avatar(),
             phone: "11999999999",
             phoneIsWhats: true,
+            role: UserRole.SOCIETY,
         };
         vi.mocked(updateUserMock.execute).mockResolvedValue(updatedUser);
 
@@ -267,6 +273,7 @@ describe("AuthController", () => {
             avatar: faker.image.avatar(),
             phone: "11999999999",
             phoneIsWhats: false,
+            role: UserRole.SOCIETY,
         };
         vi.mocked(updateUserMock.execute).mockResolvedValue(updatedUser);
 
@@ -322,6 +329,32 @@ describe("AuthController", () => {
         expect(res.json).toHaveBeenCalledWith({ message: "Forbidden" });
     });
 
+    it("should return 403 when a non-admin user tries to patch their own role", async () => {
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            auth: {
+                userId: "authenticated-user-id",
+                role: UserRole.STUDENT,
+            },
+            params: { id: "authenticated-user-id" },
+            body: {
+                role: UserRole.ADMIN,
+            },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.patch(req, res);
+
+        expect(updateUserMock.execute).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(res.json).toHaveBeenCalledWith({ message: "Forbidden" });
+    });
+
     it("should allow an admin user to patch another user", async () => {
         const updatedUser = {
             id: "other-user-id",
@@ -330,6 +363,7 @@ describe("AuthController", () => {
             avatar: faker.image.avatar(),
             phone: "11999999999",
             phoneIsWhats: true,
+            role: UserRole.MEDIATOR,
         };
         vi.mocked(updateUserMock.execute).mockResolvedValue(updatedUser);
         const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
@@ -341,7 +375,7 @@ describe("AuthController", () => {
             },
             params: { id: updatedUser.id },
             body: {
-                name: updatedUser.name,
+                role: updatedUser.role,
             },
         } as unknown as Request;
 
@@ -355,6 +389,43 @@ describe("AuthController", () => {
         expect(updateUserMock.execute).toHaveBeenCalledWith(updatedUser.id, req.body, "partial");
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(updatedUser);
+    });
+
+    it("should list users with default pagination", async () => {
+        const users = {
+            items: [
+                {
+                    id: faker.string.uuid(),
+                    email: faker.internet.email(),
+                    name: faker.person.fullName(),
+                    avatar: faker.image.avatar(),
+                    phone: "11999999999",
+                    phoneIsWhats: true,
+                    role: UserRole.STUDENT,
+                },
+            ],
+            page: 1,
+            limit: 10,
+            totalItems: 1,
+            totalPages: 1,
+        };
+        vi.mocked(listUsersMock.execute).mockResolvedValue(users);
+        const controller = new AuthController(authenticateUserMock, undefined, undefined, undefined, listUsersMock);
+
+        const req = {
+            query: {},
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.list(req, res);
+
+        expect(listUsersMock.execute).toHaveBeenCalledWith({ page: 1, limit: 10 });
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(users);
     });
 
     it("should return mapped error when partial register update fails", async () => {

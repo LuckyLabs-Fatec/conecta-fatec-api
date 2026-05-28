@@ -2,7 +2,9 @@ import { PrismaClient, UserRole as PrismaUserRole } from "@prisma/client";
 
 import { User, UserRole } from "@/domain/models/User";
 import { CreateUserParams, UpdateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
+import { ListParams, Paginated } from "@/domain/repositories/Pagination";
 import { getPrismaClient } from "@/infra/database/prisma/client";
+import { getPagination, toPaginated } from "@/infra/repositories/pagination";
 
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly db: PrismaClient = getPrismaClient()) {}
@@ -34,6 +36,21 @@ export class PrismaUserRepository implements UserRepository {
     }
 
     return this.mapUser(user);
+  }
+
+  async findPaginated(params: ListParams): Promise<Paginated<User>> {
+    const where = { active: true };
+
+    const [totalItems, users] = await Promise.all([
+      this.db.user.count({ where }),
+      this.db.user.findMany({
+        ...getPagination(params),
+        orderBy: { name: "asc" },
+        where,
+      }),
+    ]);
+
+    return toPaginated(users.map((user) => this.mapUser(user)), params, totalItems);
   }
 
   async update(id: string, data: UpdateUserParams): Promise<User> {

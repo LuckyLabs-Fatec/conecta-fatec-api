@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 
 import { InvalidPayloadError } from "@/domain/errors/InvalidPayloadError";
 import { PublicUser, UserRole } from "@/domain/models/User";
+import { Paginated } from "@/domain/repositories/Pagination";
+import { parsePaginationQuery } from "@/presentation/controllers/ControllerHelpers";
 import { getAuthenticatedUser } from "@/presentation/http/AuthenticatedRequest";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
@@ -10,7 +12,7 @@ export type AuthenticateUserResponse = {
   user: PublicUser;
 };
 
-export type CreateUserResponse = Omit<PublicUser, "role">;
+export type CreateUserResponse = PublicUser;
 
 export type CreateUserRequest = {
   email: string;
@@ -19,6 +21,7 @@ export type CreateUserRequest = {
   avatar?: string;
   phone: string;
   phoneIsWhats?: boolean;
+  role?: UserRole;
 };
 
 export type UpdateUserRequest = Partial<CreateUserRequest>;
@@ -40,12 +43,17 @@ export type DeleteUserContract = {
   execute(id: string): Promise<void>;
 };
 
+export type ListUsersContract = {
+  execute(params: { page: number; limit: number }): Promise<Paginated<PublicUser>>;
+};
+
 export class AuthController {
   constructor(
     private readonly authenticateUser: AuthenticateUserContract,
     private readonly createUser?: CreateUserContract,
     private readonly updateUser?: UpdateUserContract,
     private readonly deleteUser?: DeleteUserContract,
+    private readonly listUsers?: ListUsersContract,
   ) {}
 
   async login(req: Request, res: Response): Promise<void> {
@@ -103,6 +111,22 @@ export class AuthController {
     }
   }
 
+  async list(req: Request, res: Response): Promise<void> {
+    if (!this.listUsers) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    try {
+      const users = await this.listUsers.execute(parsePaginationQuery(req.query));
+      res.status(200).json(users);
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
   private async updateRegister(req: Request, res: Response, mode: UpdateUserMode): Promise<void> {
     if (!this.updateUser) {
       res.status(501).json({ message: "Not implemented" });
@@ -111,6 +135,11 @@ export class AuthController {
 
     try {
       if (mode === "partial" && !this.canPatchUser(req)) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      if (req.body?.role !== undefined && !this.canPatchRole(req)) {
         res.status(403).json({ message: "Forbidden" });
         return;
       }
@@ -150,5 +179,9 @@ export class AuthController {
     }
 
     return authenticatedUser.userId === this.getIdParam(req) || authenticatedUser.role === UserRole.ADMIN;
+  }
+
+  private canPatchRole(req: Request): boolean {
+    return getAuthenticatedUser(req)?.role === UserRole.ADMIN;
   }
 }

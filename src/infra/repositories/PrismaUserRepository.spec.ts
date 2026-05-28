@@ -316,6 +316,57 @@ describe("PrismaUserRepository", () => {
     expect(user.name).toBe("Partial User");
   });
 
+  it("should find paginated active users", async () => {
+    const count = vi.fn().mockResolvedValue(1);
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        id: "user-id",
+        email: "student@example.com",
+        passwordHash: "hashed-password",
+        name: "Student User",
+        avatar: null,
+        phone: "11999999999",
+        phoneIsWhats: true,
+        role: "STUDENT",
+        active: true,
+      },
+    ]);
+    const sut = new PrismaUserRepository(
+      {
+        user: { findMany, count, update: vi.fn(), create: vi.fn(), findUnique: vi.fn() },
+      } as unknown as PrismaClient
+    );
+
+    const result = await sut.findPaginated({ page: 2, limit: 5 });
+
+    expect(count).toHaveBeenCalledWith({ where: { active: true } });
+    expect(findMany).toHaveBeenCalledWith({
+      skip: 5,
+      take: 5,
+      orderBy: { name: "asc" },
+      where: { active: true },
+    });
+    expect(result).toEqual({
+      items: [
+        {
+          id: "user-id",
+          email: "student@example.com",
+          passwordHash: "hashed-password",
+          name: "Student User",
+          avatar: undefined,
+          phone: "11999999999",
+          phoneIsWhats: true,
+          role: "STUDENT",
+          active: true,
+        },
+      ],
+      page: 2,
+      limit: 5,
+      totalItems: 1,
+      totalPages: 1,
+    });
+  });
+
   it("should soft delete user by marking it inactive", async () => {
     const update = vi.fn().mockResolvedValue({
       id: "user-id",
