@@ -10,8 +10,17 @@ const projectStudentController = makeProjectStudentController();
 projectStudentRoutes.post("/", ensureRole(UserRole.STUDENT), (req, res) =>
 	projectStudentController.create(req, res),
 );
+projectStudentRoutes.post("/assign", ensureRole(UserRole.MEDIATOR), (req, res) =>
+	projectStudentController.assign(req, res),
+);
+projectStudentRoutes.get("/students", ensureRole(UserRole.MEDIATOR), (req, res) =>
+	projectStudentController.listStudents(req, res),
+);
 projectStudentRoutes.get("/", ensureRole(UserRole.STUDENT), (req, res) =>
 	projectStudentController.list(req, res),
+);
+projectStudentRoutes.get("/my-assignments", ensureRole(UserRole.STUDENT), (req, res) =>
+	projectStudentController.listMyAssignments(req, res),
 );
 projectStudentRoutes.put("/:id", ensureRole(UserRole.STUDENT), (req, res) =>
 	projectStudentController.update(req, res),

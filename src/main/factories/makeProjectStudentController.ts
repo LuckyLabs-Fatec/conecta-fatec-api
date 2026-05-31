@@ -17,5 +17,14 @@ export function makeProjectStudentController(): ProjectStudentController {
     {
       execute: (id) => projectStudentRepository.delete(id),
     },
+    {
+      execute: (data) => projectStudentRepository.assignGroup(data),
+    },
+    {
+      execute: (userId) => projectStudentRepository.findAssignmentsByStudentId(userId),
+    },
+    {
+      execute: (search) => projectStudentRepository.findStudents(search),
+    },
   );
 }
