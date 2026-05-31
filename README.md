@@ -104,12 +104,15 @@ Documentação da API disponível localmente em:
 PORT=8080
 DATABASE_URL=
 DIRECT_URL=
+PRISMA_DRIVER_ADAPTER=
 JWT_SECRET=
 JWT_EXPIRES_IN=
 CORS_ORIGIN=
 ```
 
 Ou copie o arquivo `.env-example` e renomeie como `.env`.
+
+Se estiver usando um banco PostgreSQL fora do Neon, como o PostgreSQL do Render, defina `PRISMA_DRIVER_ADAPTER=pg`.
 
 2. Instale as dependências:
 

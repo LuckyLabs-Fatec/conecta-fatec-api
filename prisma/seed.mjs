@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { hash } from "bcryptjs";
 import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
@@ -9,7 +10,9 @@ if (!connectionString) {
   throw new Error("DATABASE_URL or DIRECT_URL is not defined");
 }
 
-const adapter = new PrismaNeon({ connectionString });
+const adapter = process.env.PRISMA_DRIVER_ADAPTER === "pg"
+  ? new PrismaPg({ connectionString })
+  : new PrismaNeon({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 const users = [
