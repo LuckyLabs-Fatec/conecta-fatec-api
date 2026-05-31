@@ -115,6 +115,7 @@ model ProjectStudent {
   id        String  @id @default(uuid()) @map("id") @db.Uuid
   projectId String  @map("project_id") @db.Uuid
   userId    String  @map("user_id") @db.Uuid
+  groupName String? @map("group_name") @db.VarChar(100)
   active    Boolean @default(true) @map("active")
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
