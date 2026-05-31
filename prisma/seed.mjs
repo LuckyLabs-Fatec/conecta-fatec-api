@@ -217,11 +217,13 @@ const projectStudents = [
     id: "b1111111-1111-4111-8111-111111111111",
     projectId: "f1111111-1111-4111-8111-111111111111",
     userId: "d3333333-3333-4333-8333-333333333333",
+    groupName: "Grupo Alpha",
   },
   {
     id: "b2222222-2222-4222-8222-222222222222",
     projectId: "f2222222-2222-4222-8222-222222222222",
     userId: "d3333333-3333-4333-8333-333333333333",
+    groupName: "Grupo Beta",
   },
 ];
 
@@ -379,11 +381,13 @@ async function main() {
       update: {
         project: { connect: { id: projectStudent.projectId } },
         user: { connect: { id: projectStudent.userId } },
+        groupName: projectStudent.groupName ?? null,
       },
       create: {
         id: projectStudent.id,
         project: { connect: { id: projectStudent.projectId } },
         user: { connect: { id: projectStudent.userId } },
+        groupName: projectStudent.groupName ?? null,
       },
     });
   }
