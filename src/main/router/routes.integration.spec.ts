@@ -2,7 +2,7 @@ import { createServer, Server } from "node:http";
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
 
-import { UserRole } from "@prisma/client";
+import { ProjectStatus, ProposalStatus, UserRole } from "@prisma/client";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { disconnectDatabase, resetDatabase } from "@/test/integration/database";
@@ -297,7 +297,7 @@ describe("proposal routes", () => {
         title: "Proposal",
         description: "Proposal description",
         submissionDate: "2026-05-20T12:00:00.000Z",
-        status: "submitted",
+        status: ProposalStatus.IN_REVIEW,
         attachments: Buffer.from("file").toString("base64"),
       },
     });
@@ -339,7 +339,7 @@ describe("proposal routes", () => {
         title: "Proposal",
         description: "Proposal description",
         submissionDate: "not-a-date",
-        status: "submitted",
+        status: ProposalStatus.IN_REVIEW,
         attachments: Buffer.from("file").toString("base64"),
       },
     })).status).toBe(400);
@@ -365,7 +365,7 @@ describe("project routes", () => {
         title: "Project",
         description: "Project description",
         deadline: "2026-06-20T12:00:00.000Z",
-        status: "open",
+        status: ProjectStatus.PENDING,
         attachments: "project-file",
         courseId: course.id,
         proposalId: proposal.id,
@@ -379,10 +379,10 @@ describe("project routes", () => {
     const updated = await server.request<{ status: string }>(`/projects/${created.body.id}`, {
       method: "PUT",
       token: auth.mediator.token,
-      body: { status: "closed" },
+      body: { status: ProjectStatus.COMPLETED },
     });
     expect(updated.status).toBe(200);
-    expect(updated.body.status).toBe("closed");
+    expect(updated.body.status).toBe(ProjectStatus.COMPLETED);
 
     expect((await server.request(`/projects/${created.body.id}`, {
       method: "DELETE",
@@ -411,7 +411,7 @@ describe("project routes", () => {
         title: "Project",
         description: "Project description",
         deadline: "bad-date",
-        status: "open",
+        status: ProjectStatus.PENDING,
         courseId: "00000000-0000-0000-0000-000000000000",
         proposalId: "00000000-0000-0000-0000-000000000000",
       },

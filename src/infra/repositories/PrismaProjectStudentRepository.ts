@@ -1,4 +1,7 @@
+import { ProjectStatus as PrismaProjectStatus } from "@prisma/client";
+
 import { ProjectAssignment, ProjectStudent, StudentSummary } from "@/domain/models/ProjectStudent";
+import { ProjectStatus } from "@/domain/models/Status";
 import { ListParams, Paginated } from "@/domain/repositories/Pagination";
 import { AssignProjectGroupParams, CreateProjectStudentParams, ProjectStudentRepository, UpdateProjectStudentParams } from "@/domain/repositories/ProjectStudentRepository";
 import { getPrismaClient } from "@/infra/database/prisma/client";
@@ -15,7 +18,7 @@ type AssignmentProjectRecord = {
   id: string;
   title: string;
   description: string;
-  status: string;
+  status: PrismaProjectStatus;
   students: Array<{
     user: {
       id: string;
@@ -117,7 +120,7 @@ const mapProjectAssignment = (assignment: AssignmentRecord): ProjectAssignment =
   projectId: assignment.projectId,
   projectTitle: assignment.project.title,
   projectDescription: assignment.project.description,
-  projectStatus: assignment.project.status,
+  projectStatus: assignment.project.status as ProjectStatus,
   groupName: assignment.groupName ?? undefined,
   teammates: assignment.project.students.map((student) => mapStudentSummary(student.user)),
 });
