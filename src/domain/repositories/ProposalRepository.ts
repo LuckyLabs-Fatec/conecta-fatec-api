@@ -1,10 +1,11 @@
 import { Proposal } from "@/domain/models/Proposal";
+import { ProposalStatus } from "@/domain/models/Status";
 
 export type CreateProposalParams = {
   title: string;
   description: string;
   submissionDate: Date;
-  status: string;
+  status: ProposalStatus;
   attachments: Buffer;
   createdByUserId: string;
   optionalContactPhone?: string;
@@ -16,7 +17,7 @@ export type UpdateProposalParams = {
   title?: string;
   description?: string;
   submissionDate?: Date;
-  status?: string;
+  status?: ProposalStatus;
   attachments?: Buffer;
   optionalContactPhone?: string;
   optionalContactPhoneIsWhats?: boolean;

@@ -7,9 +7,11 @@ import {
   ListMyProposalsContract,
   ListProposalsContract,
   ProposalController,
+  UpdateProposalContract,
 } from "./ProposalController";
 
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
+import { ProposalStatus } from "@/domain/models/Status";
 import { UserRole } from "@/domain/models/User";
 
 describe("ProposalController", () => {
@@ -17,6 +19,7 @@ describe("ProposalController", () => {
   let createProposalMock: CreateProposalContract;
   let listProposalsMock: ListProposalsContract;
   let listMyProposalsMock: ListMyProposalsContract;
+  let updateProposalMock: UpdateProposalContract;
 
   beforeEach(() => {
     createProposalMock = {
@@ -31,7 +34,16 @@ describe("ProposalController", () => {
       execute: vi.fn(),
     };
 
-    proposalController = new ProposalController(createProposalMock, listProposalsMock, listMyProposalsMock);
+    updateProposalMock = {
+      execute: vi.fn(),
+    };
+
+    proposalController = new ProposalController(
+      createProposalMock,
+      listProposalsMock,
+      listMyProposalsMock,
+      updateProposalMock,
+    );
   });
 
   it("should return 400 when required fields are missing", async () => {
@@ -74,7 +86,7 @@ describe("ProposalController", () => {
         title: faker.lorem.words(3),
         description: faker.lorem.paragraph(),
         submissionDate: "invalid-date",
-        status: "SUBMITTED",
+        status: ProposalStatus.IN_REVIEW,
         attachments: Buffer.from("content"),
         createdByUserId: faker.string.uuid(),
       },
@@ -92,6 +104,30 @@ describe("ProposalController", () => {
     expect(createProposalMock.execute).not.toHaveBeenCalled();
   });
 
+  it("should return 400 when create proposal status is invalid", async () => {
+    const req = {
+      body: {
+        title: faker.lorem.words(3),
+        description: faker.lorem.paragraph(),
+        submissionDate: new Date().toISOString(),
+        status: "atribuida",
+        attachments: Buffer.from("content"),
+        createdByUserId: faker.string.uuid(),
+      },
+    } as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.create(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Invalid proposal status" });
+    expect(createProposalMock.execute).not.toHaveBeenCalled();
+  });
+
   it("should return mapped error when create proposal fails with known error", async () => {
     vi.mocked(createProposalMock.execute).mockRejectedValue(new InvalidProposalPayloadError());
 
@@ -100,7 +136,7 @@ describe("ProposalController", () => {
         title: faker.lorem.words(3),
         description: faker.lorem.paragraph(),
         submissionDate: new Date().toISOString(),
-        status: "SUBMITTED",
+        status: ProposalStatus.IN_REVIEW,
         attachments: Buffer.from("content").toString("base64"),
         createdByUserId: faker.string.uuid(),
       },
@@ -125,7 +161,7 @@ describe("ProposalController", () => {
         title: faker.lorem.words(3),
         description: faker.lorem.paragraph(),
         submissionDate: new Date().toISOString(),
-        status: "SUBMITTED",
+        status: ProposalStatus.IN_REVIEW,
         attachments: Buffer.from("content"),
         createdByUserId: faker.string.uuid(),
       },
@@ -151,7 +187,7 @@ describe("ProposalController", () => {
       title: faker.lorem.words(3),
       description: faker.lorem.paragraph(),
       submissionDate: now,
-      status: "SUBMITTED",
+      status: ProposalStatus.IN_REVIEW,
       attachments,
       optionalContactPhone: "11999999999",
       optionalContactPhoneIsWhats: true,
@@ -171,7 +207,7 @@ describe("ProposalController", () => {
         title: faker.lorem.words(3),
         description: faker.lorem.paragraph(),
         submissionDate: now.toISOString(),
-        status: "SUBMITTED",
+        status: ProposalStatus.IN_REVIEW,
         attachments: attachments.toString("base64"),
         createdByUserId: faker.string.uuid(),
         optionalContactPhone: "11999999999",
@@ -226,7 +262,7 @@ describe("ProposalController", () => {
       title: faker.lorem.words(3),
       description: faker.lorem.paragraph(),
       submissionDate: now,
-      status: "SUBMITTED",
+      status: ProposalStatus.IN_REVIEW,
       attachments,
       optionalContactPhoneIsWhats: false,
       active: true,
@@ -244,7 +280,7 @@ describe("ProposalController", () => {
         title: faker.lorem.words(3),
         description: faker.lorem.paragraph(),
         submissionDate: now.toISOString(),
-        status: "SUBMITTED",
+        status: ProposalStatus.IN_REVIEW,
         attachments,
         createdByUserId: faker.string.uuid(),
       },
@@ -277,7 +313,7 @@ describe("ProposalController", () => {
         title: faker.lorem.words(3),
         description: faker.lorem.paragraph(),
         submissionDate: new Date().toISOString(),
-        status: "SUBMITTED",
+        status: ProposalStatus.IN_REVIEW,
         attachments: 123,
         createdByUserId: faker.string.uuid(),
       },
@@ -308,7 +344,7 @@ describe("ProposalController", () => {
           title: faker.lorem.words(3),
           description: faker.lorem.paragraph(),
           submissionDate: firstSubmissionDate,
-          status: "SUBMITTED",
+          status: ProposalStatus.IN_REVIEW,
           attachments: firstAttachments,
           optionalContactPhone: "11888888888",
           optionalContactPhoneIsWhats: false,
@@ -327,7 +363,7 @@ describe("ProposalController", () => {
           title: faker.lorem.words(3),
           description: faker.lorem.paragraph(),
           submissionDate: secondSubmissionDate,
-          status: "APPROVED",
+          status: ProposalStatus.APPROVED,
           attachments: secondAttachments,
           optionalContactPhone: undefined,
           optionalContactPhoneIsWhats: true,
@@ -488,7 +524,7 @@ describe("ProposalController", () => {
           title: faker.lorem.words(3),
           description: faker.lorem.paragraph(),
           submissionDate,
-          status: "SUBMITTED",
+          status: ProposalStatus.IN_REVIEW,
           attachments,
           optionalContactPhone: "11999999999",
           optionalContactPhoneIsWhats: true,
@@ -544,6 +580,28 @@ describe("ProposalController", () => {
       totalItems: 1,
       totalPages: 1,
     });
+  });
+
+  it("should return 400 when update proposal status is invalid", async () => {
+    const req = {
+      params: {
+        id: faker.string.uuid(),
+      },
+      body: {
+        status: "atribuida",
+      },
+    } as unknown as Request;
+
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+
+    await proposalController.update(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Invalid proposal status" });
+    expect(updateProposalMock.execute).not.toHaveBeenCalled();
   });
 
   it("should return 401 when list mine is called without authenticated user id", async () => {

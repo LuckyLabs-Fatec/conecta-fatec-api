@@ -1,4 +1,5 @@
 import { UserRole } from "@/domain/models/User";
+import { ProposalStatus } from "@/domain/models/Status";
 
 export interface ProposalUser {
   id: string;
@@ -13,7 +14,7 @@ export interface Proposal {
   title: string;
   description: string;
   submissionDate: Date;
-  status: string;
+  status: ProposalStatus;
   attachments: Buffer;
   optionalContactPhone?: string;
   optionalContactPhoneIsWhats: boolean;
