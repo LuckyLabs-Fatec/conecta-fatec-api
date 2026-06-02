@@ -5,9 +5,10 @@ import { swaggerDocument } from "@/main/docs/swagger";
 describe("swagger route security", () => {
   const paths = swaggerDocument.paths;
 
-  it("documents only login, register, feedback list and notification list as public", () => {
+  it("documents only login, register, health, feedback list and notification list as public", () => {
     expect("security" in paths["/auth/login"].post).toBe(false);
     expect("security" in paths["/auth/register"].post).toBe(false);
+    expect("security" in paths["/health"].get).toBe(false);
     expect("security" in paths["/feedbacks"].get).toBe(false);
     expect("security" in paths["/notifications"].get).toBe(false);
   });

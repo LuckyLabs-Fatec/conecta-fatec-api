@@ -9,6 +9,7 @@ const swaggerDocument = {
   },
   tags: [
     { name: "Auth", description: "Autenticação e cadastro de usuários" },
+    { name: "Health", description: "Verificação de disponibilidade da API" },
     { name: "Proposals", description: "Gerenciamento de propostas" },
     { name: "Courses", description: "Gerenciamento de cursos" },
     { name: "Projects", description: "Gerenciamento de projetos" },
