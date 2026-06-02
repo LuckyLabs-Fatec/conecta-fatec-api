@@ -1,11 +1,12 @@
 import { Project } from "@/domain/models/Project";
+import { ProjectStatus } from "@/domain/models/Status";
 import { ListParams, Paginated } from "@/domain/repositories/Pagination";
 
 export type CreateProjectParams = {
   title: string;
   description: string;
   deadline?: Date;
-  status: string;
+  status: ProjectStatus;
   attachments?: string;
   courseId: string;
   proposalId: string;
@@ -16,7 +17,7 @@ export type UpdateProjectParams = {
   title?: string;
   description?: string;
   deadline?: Date;
-  status?: string;
+  status?: ProjectStatus;
   attachments?: string;
   courseId?: string;
   proposalId?: string;
