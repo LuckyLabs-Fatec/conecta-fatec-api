@@ -46,6 +46,25 @@ export type ListUsersContract = {
   execute(params: { page: number; limit: number }): Promise<Paginated<PublicUser>>;
 };
 
+const AVATAR_URL_ERROR_MESSAGE = "Avatar must be a direct Imgur image URL";
+
+const isAllowedAvatarUrl = (value: string): boolean => {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return true;
+  }
+
+  try {
+    const url = new URL(trimmedValue);
+    return url.protocol === "https:"
+      && url.hostname === "i.imgur.com"
+      && /\.(?:jpe?g|png|webp|gif)$/i.test(url.pathname);
+  } catch {
+    return false;
+  }
+};
+
 export class AuthController {
   constructor(
     private readonly authenticateUser: AuthenticateUserContract,
@@ -146,6 +165,7 @@ export class AuthController {
       if (mode === "full") {
         this.ensureFullUpdatePayload(req.body);
       }
+      this.ensureAvatarUrl(req.body);
 
       const result = await this.updateUser.execute(this.getIdParam(req), req.body, mode);
       res.status(200).json(result);
@@ -162,6 +182,12 @@ export class AuthController {
 
     if (!hasAllRequiredFields) {
       throw new InvalidPayloadError("Missing required fields");
+    }
+  }
+
+  private ensureAvatarUrl(body: UpdateUserRequest): void {
+    if (body.avatar !== undefined && !isAllowedAvatarUrl(body.avatar)) {
+      throw new InvalidPayloadError(AVATAR_URL_ERROR_MESSAGE);
     }
   }
 

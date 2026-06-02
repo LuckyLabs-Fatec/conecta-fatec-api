@@ -154,7 +154,7 @@ describe("auth routes", () => {
           email: uniqueEmail("updated"),
           password: "NewPassword123",
           name: "Updated User",
-          avatar: "https://example.com/avatar.png",
+          avatar: "https://i.imgur.com/avatar123.png",
           phone: "11888888888",
           phoneIsWhats: false,
         },

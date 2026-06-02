@@ -15,6 +15,7 @@ import { InvalidCredentialsError } from "@/domain/errors/InvalidCredentialsError
 import { UserRole } from "@/domain/models/User";
 
 
+const VALID_IMGUR_AVATAR_URL = "https://i.imgur.com/avatar123.jpg";
 
 describe("AuthController", () => {
     let authController: AuthController;
@@ -88,7 +89,7 @@ describe("AuthController", () => {
             id: faker.string.uuid(),
             email: faker.internet.email(),
             name: faker.person.fullName(),
-            avatar: faker.image.avatar(),
+            avatar: VALID_IMGUR_AVATAR_URL,
             phone: "11999999999",
             phoneIsWhats: true,
             role: UserRole.SOCIETY,
@@ -144,7 +145,7 @@ describe("AuthController", () => {
             id: faker.string.uuid(),
             email: faker.internet.email(),
             name: faker.person.fullName(),
-            avatar: faker.image.avatar(),
+            avatar: VALID_IMGUR_AVATAR_URL,
         };
 
         const createUserMock = {
@@ -246,7 +247,7 @@ describe("AuthController", () => {
             id: userId,
             email: faker.internet.email(),
             name: faker.person.fullName(),
-            avatar: faker.image.avatar(),
+            avatar: VALID_IMGUR_AVATAR_URL,
             phone: "11999999999",
             phoneIsWhats: true,
         };
@@ -362,6 +363,35 @@ describe("AuthController", () => {
         expect(updateUserMock.execute).not.toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(403);
         expect(res.json).toHaveBeenCalledWith({ message: "Forbidden" });
+    });
+
+    it("should reject partial register update with a non-Imgur avatar URL", async () => {
+        const userId = faker.string.uuid();
+        const controller = new AuthController(authenticateUserMock, undefined, updateUserMock);
+
+        const req = {
+            auth: {
+                userId,
+                role: UserRole.STUDENT,
+            },
+            params: { id: userId },
+            body: {
+                avatar: "https://plus.unsplash.com/avatar.jpg",
+            },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.patch(req, res);
+
+        expect(updateUserMock.execute).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "Avatar must be a direct Imgur image URL",
+        });
     });
 
     it("should allow an admin user to patch another user", async () => {
