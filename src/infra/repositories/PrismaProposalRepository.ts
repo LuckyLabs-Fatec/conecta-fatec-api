@@ -1,4 +1,7 @@
+import { ProposalStatus as PrismaProposalStatus } from "@prisma/client";
+
 import { Proposal } from "@/domain/models/Proposal";
+import { ProposalStatus } from "@/domain/models/Status";
 import { UserRole } from "@/domain/models/User";
 import {
   CreateProposalParams,
@@ -17,7 +20,7 @@ type PrismaClientLike = {
         title: string;
         description: string;
         submissionDate: Date;
-        status: string;
+        status: PrismaProposalStatus;
         attachments: Buffer;
         optionalContactPhone?: string;
         optionalContactPhoneIsWhats?: boolean;
@@ -40,7 +43,7 @@ type PrismaClientLike = {
         title?: string;
         description?: string;
         submissionDate?: Date;
-        status?: string;
+        status?: PrismaProposalStatus;
         attachments?: Buffer;
         optionalContactPhone?: string;
         optionalContactPhoneIsWhats?: boolean;
@@ -87,7 +90,7 @@ type ProposalRecord = {
   title: string;
   description: string;
   submissionDate: Date;
-  status: string;
+  status: PrismaProposalStatus;
   attachments: Buffer;
   optionalContactPhone: string | null;
   optionalContactPhoneIsWhats: boolean;
@@ -107,7 +110,7 @@ export class PrismaProposalRepository implements ProposalRepository {
         title: data.title,
         description: data.description,
         submissionDate: data.submissionDate,
-        status: data.status,
+        status: data.status as PrismaProposalStatus,
         attachments: data.attachments,
         optionalContactPhone: data.optionalContactPhone,
         optionalContactPhoneIsWhats: data.optionalContactPhoneIsWhats ?? false,
@@ -128,7 +131,7 @@ export class PrismaProposalRepository implements ProposalRepository {
       title: createdProposal.title,
       description: createdProposal.description,
       submissionDate: createdProposal.submissionDate,
-      status: createdProposal.status,
+      status: createdProposal.status as ProposalStatus,
       attachments: createdProposal.attachments,
       optionalContactPhone: createdProposal.optionalContactPhone ?? undefined,
       optionalContactPhoneIsWhats: createdProposal.optionalContactPhoneIsWhats,
@@ -149,7 +152,7 @@ export class PrismaProposalRepository implements ProposalRepository {
       title?: string;
       description?: string;
       submissionDate?: Date;
-      status?: string;
+      status?: PrismaProposalStatus;
       attachments?: Buffer;
       optionalContactPhone?: string;
       optionalContactPhoneIsWhats?: boolean;
@@ -159,7 +162,7 @@ export class PrismaProposalRepository implements ProposalRepository {
     if (data.title !== undefined) updateData.title = data.title;
     if (data.description !== undefined) updateData.description = data.description;
     if (data.submissionDate !== undefined) updateData.submissionDate = data.submissionDate;
-    if (data.status !== undefined) updateData.status = data.status;
+    if (data.status !== undefined) updateData.status = data.status as PrismaProposalStatus;
     if (data.attachments !== undefined) updateData.attachments = data.attachments;
     if (data.optionalContactPhone !== undefined)
       updateData.optionalContactPhone = data.optionalContactPhone;
@@ -181,7 +184,7 @@ export class PrismaProposalRepository implements ProposalRepository {
       title: updatedProposal.title,
       description: updatedProposal.description,
       submissionDate: updatedProposal.submissionDate,
-      status: updatedProposal.status,
+      status: updatedProposal.status as ProposalStatus,
       attachments: updatedProposal.attachments,
       optionalContactPhone: updatedProposal.optionalContactPhone ?? undefined,
       optionalContactPhoneIsWhats: updatedProposal.optionalContactPhoneIsWhats,
@@ -232,7 +235,7 @@ export class PrismaProposalRepository implements ProposalRepository {
         title: proposal.title,
         description: proposal.description,
         submissionDate: proposal.submissionDate,
-        status: proposal.status,
+        status: proposal.status as ProposalStatus,
         attachments: proposal.attachments,
         optionalContactPhone: proposal.optionalContactPhone ?? undefined,
         optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,
@@ -283,7 +286,7 @@ export class PrismaProposalRepository implements ProposalRepository {
         title: proposal.title,
         description: proposal.description,
         submissionDate: proposal.submissionDate,
-        status: proposal.status,
+        status: proposal.status as ProposalStatus,
         attachments: proposal.attachments,
         optionalContactPhone: proposal.optionalContactPhone ?? undefined,
         optionalContactPhoneIsWhats: proposal.optionalContactPhoneIsWhats,

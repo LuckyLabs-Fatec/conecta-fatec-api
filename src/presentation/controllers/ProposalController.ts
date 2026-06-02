@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import { InvalidProposalPayloadError } from "@/domain/errors/InvalidProposalPayloadError";
+import { isProposalStatus, ProposalStatus } from "@/domain/models/Status";
 import { UserRole } from "@/domain/models/User";
 import { getAuthenticatedUser } from "@/presentation/http/AuthenticatedRequest";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
@@ -18,7 +19,7 @@ export type ProposalResponse = {
   title: string;
   description: string;
   submissionDate: Date;
-  status: string;
+  status: ProposalStatus;
   attachments: Buffer;
   optionalContactPhone?: string;
   optionalContactPhoneIsWhats: boolean;
@@ -31,7 +32,7 @@ export type CreateProposalRequest = {
   title: string;
   description: string;
   submissionDate: Date;
-  status: string;
+  status: ProposalStatus;
   attachments: Buffer;
   createdByUserId: string;
   optionalContactPhone?: string;
@@ -43,7 +44,7 @@ export type UpdateProposalRequest = {
   title?: string;
   description?: string;
   submissionDate?: Date;
-  status?: string;
+  status?: ProposalStatus;
   attachments?: Buffer;
   optionalContactPhone?: string;
   optionalContactPhoneIsWhats?: boolean;
@@ -132,6 +133,10 @@ export class ProposalController {
 
       if (Number.isNaN(parsedSubmissionDate.getTime())) {
         throw new InvalidProposalPayloadError("Invalid submission date");
+      }
+
+      if (!isProposalStatus(status)) {
+        throw new InvalidProposalPayloadError("Invalid proposal status");
       }
 
       const normalizedAttachments = this.normalizeAttachments(attachments);
@@ -250,7 +255,9 @@ export class ProposalController {
       }
 
       if (status !== undefined) {
-        if (!status) throw new InvalidProposalPayloadError("Status cannot be empty");
+        if (!isProposalStatus(status)) {
+          throw new InvalidProposalPayloadError("Invalid proposal status");
+        }
         updateData.status = status;
       }
 

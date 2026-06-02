@@ -1,3 +1,5 @@
+import { ProjectStatus } from "@/domain/models/Status";
+
 export interface ProjectStudent {
   id: string;
   projectId: string;
@@ -15,7 +17,7 @@ export interface ProjectAssignment {
   projectId: string;
   projectTitle: string;
   projectDescription: string;
-  projectStatus: string;
+  projectStatus: ProjectStatus;
   groupName?: string;
   teammates: StudentSummary[];
 }

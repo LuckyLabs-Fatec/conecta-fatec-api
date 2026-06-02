@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 
+import { InvalidPayloadError } from "@/domain/errors/InvalidPayloadError";
 import { Project } from "@/domain/models/Project";
+import { isProjectStatus, ProjectStatus } from "@/domain/models/Status";
 import { Paginated } from "@/domain/repositories/Pagination";
 import {
   parseOptionalDate,
@@ -13,7 +15,7 @@ export type CreateProjectRequest = {
   title: string;
   description: string;
   deadline?: Date;
-  status: string;
+  status: ProjectStatus;
   attachments?: string;
   courseId: string;
   proposalId: string;
@@ -24,7 +26,7 @@ export type UpdateProjectRequest = {
   title?: string;
   description?: string;
   deadline?: Date;
-  status?: string;
+  status?: ProjectStatus;
   attachments?: string;
   courseId?: string;
   proposalId?: string;
@@ -70,6 +72,10 @@ export class ProjectController {
 
       requireFields({ title, description, status, courseId, proposalId });
 
+      if (!isProjectStatus(status)) {
+        throw new InvalidPayloadError("Invalid project status");
+      }
+
       const project = await this.createProject.execute({
         title,
         description,
@@ -107,6 +113,10 @@ export class ProjectController {
         proposalId,
         selectedFeedbackId,
       } = req.body ?? {};
+
+      if (status !== undefined && !isProjectStatus(status)) {
+        throw new InvalidPayloadError("Invalid project status");
+      }
 
       const project = await this.updateProject.execute(id, {
         title,

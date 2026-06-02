@@ -1,6 +1,6 @@
 import { hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
-import { UserRole } from "@prisma/client";
+import { ProjectStatus, ProposalStatus, UserRole } from "@prisma/client";
 
 import { prisma } from "@/test/integration/database";
 
@@ -61,7 +61,7 @@ export async function createProposal(createdByUserId?: string) {
       title: `Proposal ${sequence + 1}`,
       description: "Proposal description",
       submissionDate: new Date("2026-05-20T12:00:00.000Z"),
-      status: "submitted",
+      status: ProposalStatus.IN_REVIEW,
       attachments: Buffer.from("proposal-file"),
       optionalContactPhone: "11888888888",
       optionalContactPhoneIsWhats: false,
@@ -80,7 +80,7 @@ export async function createProject() {
       title: `Project ${sequence + 1}`,
       description: "Project description",
       deadline: new Date("2026-06-20T12:00:00.000Z"),
-      status: "open",
+      status: ProjectStatus.PENDING,
       attachments: "project-file",
       courseId: course.id,
       proposalId: proposal.id,
