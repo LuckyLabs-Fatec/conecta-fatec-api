@@ -1,4 +1,7 @@
+import { ProjectStatus as PrismaProjectStatus } from "@prisma/client";
+
 import { Project } from "@/domain/models/Project";
+import { ProjectStatus } from "@/domain/models/Status";
 import {
   CreateProjectParams,
   ProjectRepository,
@@ -13,7 +16,7 @@ type ProjectRecord = {
   title: string;
   description: string;
   deadline: Date | null;
-  status: string;
+  status: PrismaProjectStatus;
   attachments: string | null;
   active: boolean;
   courseId: string;
@@ -28,7 +31,7 @@ type PrismaClientLike = {
         title: string;
         description: string;
         deadline?: Date;
-        status: string;
+        status: PrismaProjectStatus;
         attachments?: string;
         course: { connect: { id: string } };
         proposal: { connect: { id: string } };
@@ -41,7 +44,7 @@ type PrismaClientLike = {
         title?: string;
         description?: string;
         deadline?: Date;
-        status?: string;
+        status?: PrismaProjectStatus;
         attachments?: string;
         active?: boolean;
         course?: { connect: { id: string } };
@@ -64,7 +67,7 @@ const mapProject = (project: ProjectRecord): Project => ({
   title: project.title,
   description: project.description,
   deadline: project.deadline ?? undefined,
-  status: project.status,
+  status: project.status as ProjectStatus,
   attachments: project.attachments ?? undefined,
   active: project.active,
   courseId: project.courseId,
@@ -83,7 +86,7 @@ export class PrismaProjectRepository implements ProjectRepository {
         title: data.title,
         description: data.description,
         deadline: data.deadline,
-        status: data.status,
+        status: data.status as PrismaProjectStatus,
         attachments: data.attachments,
         course: { connect: { id: data.courseId } },
         proposal: { connect: { id: data.proposalId } },
@@ -102,7 +105,7 @@ export class PrismaProjectRepository implements ProjectRepository {
     if (data.title !== undefined) updateData.title = data.title;
     if (data.description !== undefined) updateData.description = data.description;
     if (data.deadline !== undefined) updateData.deadline = data.deadline;
-    if (data.status !== undefined) updateData.status = data.status;
+    if (data.status !== undefined) updateData.status = data.status as PrismaProjectStatus;
     if (data.attachments !== undefined) updateData.attachments = data.attachments;
     if (data.courseId !== undefined) updateData.course = { connect: { id: data.courseId } };
     if (data.proposalId !== undefined) updateData.proposal = { connect: { id: data.proposalId } };
