@@ -74,6 +74,12 @@ describe("root and docs routes", () => {
     expect(response.body).toEqual({ message: "Hello, World!" });
   });
 
+  it("GET /health returns 200 without authentication", async () => {
+    const response = await server.request("/health");
+
+    expect(response.status).toBe(200);
+  });
+
   it("GET /docs.json returns the swagger document", async () => {
     const response = await server.request<{ openapi: string }>("/docs.json");
 

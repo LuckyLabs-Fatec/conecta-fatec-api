@@ -26,4 +26,8 @@ routes.get("/", (req, res) => {
   res.send({ message: "Hello, World!" });
 });
 
+routes.get("/health", (_req, res) => {
+  res.sendStatus(200);
+});
+
 export { routes };
