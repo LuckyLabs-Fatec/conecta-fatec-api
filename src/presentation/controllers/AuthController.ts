@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { InvalidPayloadError } from "@/domain/errors/InvalidPayloadError";
 import { PublicUser, UserRole } from "@/domain/models/User";
+import { Paginated } from "@/domain/repositories/Pagination";
 import { getAuthenticatedUser } from "@/presentation/http/AuthenticatedRequest";
 import { HttpErrorMapper } from "@/presentation/mappers/HttpErrorMapper";
 
@@ -19,6 +20,7 @@ export type CreateUserRequest = {
   avatar?: string;
   phone: string;
   phoneIsWhats?: boolean;
+  role?: UserRole;
 };
 
 export type UpdateUserRequest = Partial<CreateUserRequest>;
@@ -40,12 +42,17 @@ export type DeleteUserContract = {
   execute(id: string): Promise<void>;
 };
 
+export type ListUsersContract = {
+  execute(params: { page: number; limit: number }): Promise<Paginated<PublicUser>>;
+};
+
 export class AuthController {
   constructor(
     private readonly authenticateUser: AuthenticateUserContract,
     private readonly createUser?: CreateUserContract,
     private readonly updateUser?: UpdateUserContract,
     private readonly deleteUser?: DeleteUserContract,
+    private readonly listUsers?: ListUsersContract,
   ) {}
 
   async login(req: Request, res: Response): Promise<void> {
@@ -96,6 +103,27 @@ export class AuthController {
     try {
       await this.deleteUser.execute(this.getIdParam(req));
       res.status(204).send();
+    } catch (error: unknown) {
+      const statusCode = HttpErrorMapper.getStatusCode(error);
+      const message = HttpErrorMapper.getMessage(error);
+      res.status(statusCode).json({ message });
+    }
+  }
+
+  async list(req: Request, res: Response): Promise<void> {
+    if (!this.listUsers) {
+      res.status(501).json({ message: "Not implemented" });
+      return;
+    }
+
+    const params = {
+      page: Number(req.query.page ?? 1),
+      limit: Number(req.query.limit ?? 10),
+    };
+
+    try {
+      const result = await this.listUsers.execute(params);
+      res.status(200).json(result);
     } catch (error: unknown) {
       const statusCode = HttpErrorMapper.getStatusCode(error);
       const message = HttpErrorMapper.getMessage(error);

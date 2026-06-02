@@ -2,6 +2,7 @@ import { PrismaClient, UserRole as PrismaUserRole } from "@prisma/client";
 
 import { User, UserRole } from "@/domain/models/User";
 import { CreateUserParams, UpdateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
+import { ListParams, Paginated } from "@/domain/repositories/Pagination";
 import { getPrismaClient } from "@/infra/database/prisma/client";
 
 export class PrismaUserRepository implements UserRepository {
@@ -34,6 +35,28 @@ export class PrismaUserRepository implements UserRepository {
     }
 
     return this.mapUser(user);
+  }
+
+  async findPaginated({ page, limit }: ListParams): Promise<Paginated<User>> {
+    const skip = (page - 1) * limit;
+    const where = { active: true };
+    const [items, totalItems] = await Promise.all([
+      this.db.user.findMany({
+        where,
+        orderBy: { email: "asc" },
+        skip,
+        take: limit,
+      }),
+      this.db.user.count({ where }),
+    ]);
+
+    return {
+      items: items.map((user) => this.mapUser(user)),
+      page,
+      limit,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+    };
   }
 
   async update(id: string, data: UpdateUserParams): Promise<User> {

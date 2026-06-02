@@ -6,6 +6,7 @@ import {
     AuthController,
     AuthenticateUserContract,
     DeleteUserContract,
+    ListUsersContract,
     UpdateUserContract,
     UpdateUserRequest,
 } from "./AuthController";
@@ -20,6 +21,7 @@ describe("AuthController", () => {
     let authenticateUserMock: AuthenticateUserContract;
     let updateUserMock: UpdateUserContract;
     let deleteUserMock: DeleteUserContract;
+    let listUsersMock: ListUsersContract;
 
     beforeEach(() => {
         authenticateUserMock = {
@@ -29,6 +31,9 @@ describe("AuthController", () => {
             execute: vi.fn(),
         };
         deleteUserMock = {
+            execute: vi.fn(),
+        };
+        listUsersMock = {
             execute: vi.fn(),
         };
 
@@ -196,6 +201,43 @@ describe("AuthController", () => {
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });
+    });
+
+    it("should return paginated users for admin listing", async () => {
+        const paginatedUsers = {
+            items: [
+                {
+                    id: faker.string.uuid(),
+                    email: faker.internet.email(),
+                    name: faker.person.fullName(),
+                    avatar: faker.image.avatar(),
+                    phone: "11999999999",
+                    phoneIsWhats: true,
+                    role: UserRole.ADMIN,
+                },
+            ],
+            page: 2,
+            limit: 5,
+            totalItems: 12,
+            totalPages: 3,
+        };
+        vi.mocked(listUsersMock.execute).mockResolvedValue(paginatedUsers);
+        const controller = new AuthController(authenticateUserMock, undefined, undefined, undefined, listUsersMock);
+
+        const req = {
+            query: { page: "2", limit: "5" },
+        } as unknown as Request;
+
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        } as unknown as Response;
+
+        await controller.list(req, res);
+
+        expect(listUsersMock.execute).toHaveBeenCalledWith({ page: 2, limit: 5 });
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(paginatedUsers);
     });
 
     it("should return 200 and updated user on full register update", async () => {

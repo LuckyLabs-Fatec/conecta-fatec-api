@@ -1,4 +1,5 @@
 import { User, UserRole } from "@/domain/models/User";
+import { Paginated, ListParams } from "@/domain/repositories/Pagination";
 import { CreateUserParams, UpdateUserParams, UserRepository } from "@/domain/repositories/UserRepository";
 
 type UserFixture = Omit<User, "active"> & { active?: boolean };
@@ -8,6 +9,19 @@ export class InMemoryUserRepository implements UserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.users.find((user) => user.email === email && user.active !== false) ?? null;
+  }
+
+  async findPaginated({ page, limit }: ListParams): Promise<Paginated<User>> {
+    const activeUsers = this.users.filter((user) => user.active !== false);
+    const start = (page - 1) * limit;
+
+    return {
+      items: activeUsers.slice(start, start + limit),
+      page,
+      limit,
+      totalItems: activeUsers.length,
+      totalPages: Math.ceil(activeUsers.length / limit),
+    };
   }
 
   async create(data: CreateUserParams): Promise<User> {

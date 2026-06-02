@@ -8,6 +8,7 @@ import { proposalRoutes } from "@/main/router/proposal.routes";
 import { projectStudentRoutes } from "@/main/router/project-student.routes";
 import { projectRoutes } from "@/main/router/project.routes";
 import { mediatorRoutes } from "@/main/router/mediator.routes";
+import { userRoutes } from "@/main/router/user.routes";
 
 const routes = Router();
 
@@ -19,6 +20,7 @@ routes.use("/proposals", proposalRoutes);
 routes.use("/project-students", projectStudentRoutes);
 routes.use("/projects", projectRoutes);
 routes.use("/mediator", mediatorRoutes);
+routes.use("/users", userRoutes);
 
 routes.get("/", (req, res) => {
   res.send({ message: "Hello, World!" });

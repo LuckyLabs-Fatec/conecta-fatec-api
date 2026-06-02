@@ -99,6 +99,7 @@ export function makeAuthController(): AuthController {
           avatar: data.avatar,
           phone: data.phone,
           phoneIsWhats: data.phoneIsWhats,
+          role: data.role,
         };
 
         const updatedUser = await userRepository.update(id, updateData);
@@ -110,6 +111,7 @@ export function makeAuthController(): AuthController {
           avatar: updatedUser.avatar,
           phone: updatedUser.phone,
           phoneIsWhats: updatedUser.phoneIsWhats,
+          role: updatedUser.role,
         };
       },
     },
@@ -117,6 +119,24 @@ export function makeAuthController(): AuthController {
       async execute(id: string) {
         await userRepository.softDelete(id);
       },
-    }
+    },
+    {
+      async execute(params) {
+        const users = await userRepository.findPaginated(params);
+
+        return {
+          ...users,
+          items: users.items.map((user) => ({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            avatar: user.avatar,
+            phone: user.phone,
+            phoneIsWhats: user.phoneIsWhats,
+            role: user.role,
+          })),
+        };
+      },
+    },
   );
 }
